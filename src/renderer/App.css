@@ -1,0 +1,37 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import '~antd/dist/antd.css';
+
+body {
+  height: 100vh;
+}
+
+.mainLayout {
+  background: rgba(255, 255, 255, 0.3);
+  height: 100vh;
+}
+
+.mainLayout .trigger {
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.mainLayout .trigger:hover {
+  color: #1890ff;
+}
+
+.layout-content {
+  min-height: 280px;
+  padding: 24px;
+  background: #fff;
+}
+
+.site-layout-background {
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
