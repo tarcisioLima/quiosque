@@ -1,0 +1,114 @@
+# Docker
+É um sistema de containers, que visa separar tecnologias em portas.
+
+Imagem: um serviço disponivel no docker como ferramentas, SO: Postgree, Mongo...
+Container: Instancia de uma imagem.
+Docker Registry (Docker Hub): Onde contêm as imagens.
+
+Docker File: Receita pra montar a nossa própria imagem.
+EXEMPLO:
+----------------------------------------------
+# Partimos de uma imagem existente
+FROM node:10
+# Definimos a pasta e copiamos os arquivos
+WORKDIR /usr/app
+COPY . ./
+# Instalamos as dependências
+RUN yarn
+# Qual porta queremos expor
+EXPOSE 3333
+# Executamos nossa aplicação
+CMD yarn start
+----------------------------------------------
+
+Criar um container a partir duma imagem:
+$ docker run --name database -e POSTGRES_PASSWORD=docker -p 5432:5432
+
+Listar containers em execução
+$ docker ps
+
+Para deixar o container sempre ativo ao ligar o pc:
+$ docker start nomecontainer
+-------------------------------------------------
+
+# Configuração de eslint, prettier e editorConfig
+
+yarn add eslint <- Esse pacote serve pra verificar se nosso código está
+seguindo os padrões. (OBS: Instalar como dependencia de desenvolvimento)
+
+Para inicia-lo: yarn eslint --init
+
+Depois de gerado arquivo de configuração, devemos ir nas configurações do vscode
+para ativar o autoFix ao salvar o arquivo. Ctrl + Shit + p e digitar Open Settings (JSON).
+
+"[javascript]": {
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+  }
+}
+
+Agora devemos sobreescrever algumas regras no .eslintrc.js
+rules: {
+  "prettier/prettier": "error",
+  "class-methods-use-this": "off",
+  "no-param-reassign": "off",
+  camelcase: "off",
+  "no-unused-vars": ["error: ", { argsIgnorePattern: "next" }]
+}
+
+Agora devemos instalar o prettier
+yarn add prettier eslint-config-prettier eslint-plugin-prettier -D
+
+Agora só atualizar o eslintrc assim:
+extends: ["airbnb-base", "prettier"],
+plugins: ["prettier"],
+
+É normal o prettier conflitar com o style guide, no caso do airbnb.
+Para resolver isso devemos criar um arquivo .prettierrc e sobreescrever
+regras que não estão de acordo.
+
+{
+  "singleQuote": true,
+  "trailingComma": "es5"
+}
+
+Para consertar todos os erros de lint de uma vez só digitar:
+yarn eslint --fix src --ext .js
+
+Caso a equipe uso editores diferentes devemos instalar o editorConfig
+para padronizar.
+
+-------------------------------------------------
+# Sequelize é um ORM pra nodejs.
+yarn add sequelize
+yarn add sequelize-cli -D
+
+Criar migration
+yarn sequelize migration:create --name=create-users
+
+Rodar migration
+yarn sequelize db:migrate
+
+Ao criar um campo virtual, significa que o campo só vai
+existir no código e não no banco de dados.
+
+-------------------------------------------------
+# JWT  Token composto por
+HEADERS - Metadados da criptografia vão aqui.
+PAYLOAD - Dados não sensíveis vão aqui.
+SIGNATURE - Assinatura caso mudem dados no payload vai aqui.
+
+O token precisa de um tempo de expiração.
+
+------------------------------------------------------
+Sessão com express
+
+Vamos usar um middleware;
+
+PAREI EM:
+Validações de agendamento
+
+------------------------------------------------------
+Redis memurai for windows port 6379
+
+Parei em: configurando fila com redis.
