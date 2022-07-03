@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('files', {
+    return queryInterface.createTable('products', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -11,9 +11,22 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      path: {
-        type: Sequelize.STRING,
+      sell_price: {
+        type: Sequelize.FLOAT,
         allowNull: false,
+      },
+      cost_price: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
+      },
+      disabled: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: true,
         unique: true,
       },
       created_at: {
@@ -28,6 +41,6 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('files');
+    return queryInterface.dropTable('products');
   },
 };

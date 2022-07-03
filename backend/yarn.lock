@@ -2895,6 +2895,11 @@ youch@^2.0.10:
     mustache "^3.0.0"
     stack-trace "0.0.10"
 
+yup-locale-pt@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/yup-locale-pt/-/yup-locale-pt-0.0.9.tgz#5e0d2a7e78c3603b16d76a8a550c134e029002e7"
+  integrity sha512-Fpvu6NA04Uy/aXHNG2h1zvcizTf3WxuxHFX+cvamgCfrmtIcCnzb88Ek0q6+/Hj1BixO8a/bbfJAtIpSytQyWQ==
+
 yup@^0.28.3:
   version "0.28.3"
   resolved "https://registry.yarnpkg.com/yup/-/yup-0.28.3.tgz#1ca607405a8adf24a5ac51f54bd09d527555f0ba"

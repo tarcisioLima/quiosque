@@ -1,6 +1,5 @@
-import * as Yup from 'yup';
+import Yup from '../../config/yup';
 import User from '../models/User';
-import File from '../models/File';
 
 class UserController {
   async store(req, res) {
@@ -14,20 +13,24 @@ class UserController {
         .min(6),
     });
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+    if (!schema.isValidSync(req.body)) {
+      const validationResult = await schema
+        .validate(req.body, {
+          abortEarly: false,
+        })
+        .catch(err => err);
+      return res.status(400).json(validationResult.errors);
     }
 
     const userExists = await User.findOne({ where: { email: req.body.email } });
     if (userExists) {
       return res.status(400).json({ error: 'User already exists.' });
     }
-    const { id, name, email, provider } = await User.create(req.body);
+    const { id, name, email } = await User.create(req.body);
     return res.json({
       id,
       name,
       email,
-      provider,
     });
   }
 
@@ -69,15 +72,7 @@ class UserController {
 
     await user.update(req.body);
 
-    const { id, name, avatar } = await User.findByPk(req.userId, {
-      include: [
-        {
-          model: File,
-          as: 'avatar',
-          attributes: ['id', 'path', 'url'],
-        },
-      ],
-    });
+    const { id, name, avatar } = await User.findByPk(req.userId);
 
     return res.json({
       id,
