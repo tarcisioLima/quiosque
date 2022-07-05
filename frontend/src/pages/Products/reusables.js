@@ -2,6 +2,7 @@ import React from 'react';
 import { Space, Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { format, parseISO } from 'date-fns';
+import formatCash from '~/utils/formatCash';
 
 const columns = (update, remove) => [
   {
@@ -19,12 +20,13 @@ const columns = (update, remove) => [
     title: 'Preço de venda',
     dataIndex: 'sell_price',
     key: 'sell_price',
+    render: (price) => (price ? formatCash(price) : '---'),
   },
   {
     title: 'Preço de custo',
     dataIndex: 'cost_price',
     key: 'cost_price',
-    render: (price) => price || '---',
+    render: (price) => (price ? formatCash(price) : '---'),
   },
   {
     title: 'Data de criação',

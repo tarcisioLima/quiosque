@@ -1,11 +1,23 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import React from 'react';
+import { Divider, Typography, Col, Row, Statistic } from 'antd';
+const { Title } = Typography;
+const Dashboard = () => (
+  <div>
+    <Title>Dashboard - Início</Title>
+    <Divider />
+    <Row gutter={16}>
+      <Col span={3}>
+        <Statistic title="Produtos Registrados" value={10} />
+      </Col>
+      <Col span={3}>
+        <Statistic title="Mesas disponíveis" value={10} />
+      </Col>
+      <Col span={3}>
+        <Statistic title="Turno Atual Aberto" value="Matutino" />
+      </Col>
+    </Row>
+    <Divider />
+  </div>
+);
 
-import api from '~/services/api';
-import { Container } from './styles';
-
-export default function Dashboard() {
-  useEffect(() => {}, []);
-
-  return <Container>teste</Container>;
-}
+export default Dashboard;

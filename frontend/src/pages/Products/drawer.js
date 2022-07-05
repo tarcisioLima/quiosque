@@ -1,19 +1,48 @@
-import React, { useState } from 'react';
-import { Button, Col, Drawer, Form, Input, Row, Select, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  Col,
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Switch,
+  Space,
+} from 'antd';
 import { useProduct } from '~/context/product';
+import { formatNumber, parserNumber } from '~/utils/currencyMask';
 
 const ProductDrawer = () => {
-  const { open, current, closeDrawer, actionType, onSubmit } = useProduct();
-  const [form] = Form.useForm();
+  const [initialValues, setInitialValues] = useState({});
+
+  const {
+    open,
+    current,
+    setCurrent,
+    closeDrawer,
+    actionType,
+    onSubmit,
+    form,
+  } = useProduct();
 
   const onFinish = (values) => {
-    console.log('ON FINISH: ', values);
     onSubmit(values);
   };
 
+  useEffect(() => {
+    if (current && actionType === 'update') {
+      form.setFieldsValue(current);
+    }
+  }, [open, actionType, current, form]);
+
   return (
     <Drawer
-      title={actionType === 'create' ? 'Criar' : `Atualizar ${current.name}`}
+      title={
+        actionType === 'create'
+          ? 'Criar'
+          : `Atualizar ${current && current.name}`
+      }
       width={720}
       onClose={closeDrawer}
       visible={open}
@@ -28,7 +57,13 @@ const ProductDrawer = () => {
         </Space>
       }
     >
-      <Form layout="vertical" hideRequiredMark form={form} onFinish={onFinish}>
+      <Form
+        layout="vertical"
+        hideRequiredMark
+        form={form}
+        onFinish={onFinish}
+        initialValues={initialValues}
+      >
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -52,14 +87,38 @@ const ProductDrawer = () => {
                 },
               ]}
             >
-              <Input placeholder="Ex: 50,00" />
+              <InputNumber
+                placeholder="Ex: 50,00"
+                formatter={(value) => formatNumber(value)}
+                parser={(value) => parserNumber(value)}
+                style={{ width: '100%' }}
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item name="cost_price" label="Preço de custo">
-              <Input placeholder="Ex: 50,00" />
+              <InputNumber
+                placeholder="Ex: 50,00"
+                formatter={(value) => formatNumber(value)}
+                parser={(value) => parserNumber(value)}
+                style={{ width: '100%' }}
+              />
             </Form.Item>
           </Col>
+          {actionType === 'update' ? (
+            <Col span={12}>
+              <Form.Item label="Desabilitado" name="disabled">
+                <Switch
+                  checked={current && current.disabled}
+                  onChange={() => {
+                    if (current) {
+                      setCurrent({ ...current, disabled: !current.disabled });
+                    }
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          ) : null}
         </Row>
       </Form>
     </Drawer>

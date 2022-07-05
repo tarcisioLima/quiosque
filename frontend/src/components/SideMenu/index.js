@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PushpinOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import history from '~/services/history';
+import { withRouter } from 'react-router-dom';
 
 const menuList = [
   {
@@ -16,11 +17,24 @@ const menuList = [
   },
 ];
 
-const SideMenu = () => {
+const dict = {
+  '/dashboard': 'dashboard',
+  '/produtos': 'produtos',
+};
+
+const SideMenu = ({ location }) => {
+  const [activeKey, setActiveKey] = useState(null);
+
+  /* useEffect(() => {
+    const { pathname } = location;
+    const newActive = dict[pathname] || null;
+    setActiveKey();
+  }, [location, activeKey]); */
+
   return (
     <Menu
       mode="inline"
-      defaultSelectedKeys={['dashboard']}
+      activeKey={activeKey}
       style={{
         height: '100%',
         borderRight: 0,
@@ -33,4 +47,4 @@ const SideMenu = () => {
   );
 };
 
-export default SideMenu;
+export default withRouter(SideMenu);

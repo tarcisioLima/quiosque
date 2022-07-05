@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
+import { Form } from 'antd';
 import { toast } from 'react-toastify';
 import api from '~/services/api';
 export const ProductContext = createContext();
@@ -15,6 +16,7 @@ const ProductProvider = ({ children }) => {
   const [current, setCurrent] = useState(null);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState([]);
+  const [form] = Form.useForm();
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -31,6 +33,7 @@ const ProductProvider = ({ children }) => {
     setActionType('create');
     setOpen(true);
     setCurrent(null);
+    form.resetFields();
   };
 
   const openUpdateProduct = (_current) => {
@@ -42,6 +45,7 @@ const ProductProvider = ({ children }) => {
   const closeDrawer = () => {
     setOpen(false);
     setCurrent(null);
+    form.resetFields();
   };
 
   const onSubmit = async (values) => {
@@ -94,6 +98,7 @@ const ProductProvider = ({ children }) => {
         setActionType,
         onSubmit,
         remove,
+        form,
       }}
     >
       {children}

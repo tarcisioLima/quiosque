@@ -21,19 +21,11 @@ const DefaultLayout = ({ children }) => (
             padding: '0 24px 24px',
           }}
         >
-          <Breadcrumb
-            style={{
-              margin: '16px 0',
-            }}
-          >
-            <Breadcrumb.Item>Inicio</Breadcrumb.Item>
-            {/*<Breadcrumb.Item>List</Breadcrumb.Item>*/}
-          </Breadcrumb>
           <Content
             className="site-layout-background"
             style={{
               padding: 24,
-              margin: 0,
+              margin: '24px 0px 0px 0px',
               minHeight: 280,
             }}
           >

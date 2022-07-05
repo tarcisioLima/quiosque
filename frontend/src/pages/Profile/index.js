@@ -5,7 +5,7 @@ import { Form, Input } from '@rocketseat/unform';
 import { updateProfileRequest } from '~/store/modules/user/actions';
 import { signOut } from '~/store/modules/auth/actions';
 import { Container } from './styles';
-import { Col, Row } from 'antd';
+import { Col, Row, PageHeader } from 'antd';
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -21,6 +21,13 @@ export default function Profile() {
 
   return (
     <Container>
+      <PageHeader
+        ghost={false}
+        onBack={() => window.history.back()}
+        title="Configurações"
+        subTitle="Editar Perfil e Sair do Sistema"
+      ></PageHeader>
+
       <Form initialData={profile} onSubmit={handleSubmit}>
         <Col span={12}>
           <Row gutter={16}>

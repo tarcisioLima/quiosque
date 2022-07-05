@@ -1,11 +1,13 @@
-import React from 'react';
-import { Table, Divider, PageHeader, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Divider, PageHeader, Button, Input } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { columns } from './reusables';
 import Drawer from './drawer';
 import ProductProvider, { useProduct } from '~/context/product';
 
 const Products = () => {
+  const [value, setValue] = useState('');
+  const [filteredList, setFilteredList] = useState([]);
   const {
     list,
     loading,
@@ -13,6 +15,10 @@ const Products = () => {
     openUpdateProduct,
     remove,
   } = useProduct();
+
+  useEffect(() => {
+    setFilteredList(list);
+  }, [list]);
 
   return (
     <div>
@@ -31,13 +37,31 @@ const Products = () => {
       <Drawer />
 
       <Divider orientation="left">Listagem</Divider>
+      <Input
+        placeholder="Buscar por nome"
+        value={value}
+        style={{ height: 45 }}
+        onChange={(e) => {
+          const currValue = e.target.value;
+          setValue(currValue);
+          const filteredData = list.filter((entry) =>
+            entry.name
+              .toLocaleLowerCase()
+              .includes(currValue.toLocaleLowerCase())
+          );
+          setFilteredList(filteredData);
+        }}
+      />
+      <br />
+      <Divider orientation="left"></Divider>
       <Table
+        filterSearch
         columns={columns(openUpdateProduct, remove)}
         loading={loading}
         pagination={{
           position: 'bottomRight',
         }}
-        dataSource={list}
+        dataSource={filteredList}
       />
     </div>
   );
