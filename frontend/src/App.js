@@ -3,7 +3,8 @@ import { ToastContainer } from 'react-toastify';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-
+import { ConfigProvider } from 'antd';
+import pt_BR from 'antd/es/locale/pt_BR';
 import './config/ReactotronConfig';
 
 import Routes from './routes';
@@ -18,7 +19,9 @@ function App() {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <Router history={history}>
-          <Routes />
+          <ConfigProvider locale={pt_BR}>
+            <Routes />
+          </ConfigProvider>
           <GlobalStyle />
           <ToastContainer autoclose={3000} />
         </Router>

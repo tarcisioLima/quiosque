@@ -24,7 +24,7 @@ class ProductController {
 
     const { name, sell_price, ...rest } = req.body;
 
-    await Follow.create({
+    await Product.create({
       name,
       sell_price,
       ...rest,

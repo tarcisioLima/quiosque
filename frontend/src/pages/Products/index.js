@@ -1,25 +1,52 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Radio, Space, Table, Tag } from 'antd';
+import React from 'react';
+import { Table, Divider, PageHeader, Button } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { columns } from './reusables';
-import api from '~/services/api';
+import Drawer from './drawer';
+import ProductProvider, { useProduct } from '~/context/product';
 
 const Products = () => {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {}, []);
+  const {
+    list,
+    loading,
+    openNewProduct,
+    openUpdateProduct,
+    remove,
+  } = useProduct();
 
   return (
     <div>
-      <h2>Produtos</h2>
+      <PageHeader
+        ghost={false}
+        onBack={() => window.history.back()}
+        title="Produtos"
+        subTitle="Listar, Criar, Atualizar e Remover"
+        extra={[
+          <Button key="1" type="primary" onClick={() => openNewProduct()}>
+            <PlusCircleOutlined /> Adicionar Produto
+          </Button>,
+        ]}
+      ></PageHeader>
+
+      <Drawer />
+
+      <Divider orientation="left">Listagem</Divider>
       <Table
-        columns={columns}
+        columns={columns(openUpdateProduct, remove)}
+        loading={loading}
         pagination={{
           position: 'bottomRight',
         }}
-        dataSource={products}
+        dataSource={list}
       />
     </div>
   );
 };
 
-export default Products;
+const ProductWithProvider = () => (
+  <ProductProvider>
+    <Products />
+  </ProductProvider>
+);
+
+export default ProductWithProvider;
