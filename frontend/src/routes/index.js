@@ -7,6 +7,7 @@ import SignUp from '~/pages/SignUp';
 
 import Dashboard from '~/pages/Dashboard';
 import Profile from '~/pages/Profile';
+import Products from '~/pages/Products';
 
 export default function Routes() {
   return (
@@ -15,6 +16,7 @@ export default function Routes() {
       <Route path="/register" component={SignUp}></Route>
 
       <Route path="/dashboard" component={Dashboard} isPrivate></Route>
+      <Route path="/produtos" component={Products} isPrivate></Route>
       <Route path="/profile" component={Profile} isPrivate></Route>
 
       {/* <Route path="/" component={() => <h1>404</h1>} /> */}

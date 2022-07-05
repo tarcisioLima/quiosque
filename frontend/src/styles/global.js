@@ -1,3 +1,4 @@
+import 'antd/dist/antd.css';
 import { createGlobalStyle } from 'styled-components';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -75,6 +76,10 @@ export default createGlobalStyle`
     font-family: 'roboto';
   }
 
+  .ant-layout {
+    height: 90vh;  
+  }
+
   a {
     text-decoration: none;
   }
@@ -85,5 +90,15 @@ export default createGlobalStyle`
 
   button {
     cursor: pointer;
+  }
+
+  #components-layout-demo-side .logo {
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .site-layout .site-layout-background {
+    background: #fff;
   }
 `;

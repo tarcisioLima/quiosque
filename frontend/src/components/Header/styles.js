@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  background: #fff;
+  background: rgba(255, 255, 255, 1);
   padding: 0 30px;
+  border-bottom: 1px solid #1890ff;
 `;
 
 export const Content = styled.div`
   height: 64px;
-  max-width: 900px;
+
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -18,15 +19,18 @@ export const Content = styled.div`
     align-items: center;
 
     img {
-      margin-right: 20px;
-      padding-right: 20px;
+      margin-right: 10px;
+      padding-right: 10px;
       border-right: 1px solid #eee;
+      filter: invert(1);
     }
 
     a {
       font-weight: bold;
       text-transform: uppercase;
-      color: #7159c1;
+      color: #1890ff;
+      margin-left: 10px;
+      font-size: 1.2em;
     }
   }
 

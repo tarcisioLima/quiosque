@@ -4,10 +4,8 @@ import { Form, Input } from '@rocketseat/unform';
 
 import { updateProfileRequest } from '~/store/modules/user/actions';
 import { signOut } from '~/store/modules/auth/actions';
-
-import AvatarInput from './AvatarInput';
-
 import { Container } from './styles';
+import { Col, Row } from 'antd';
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -24,30 +22,48 @@ export default function Profile() {
   return (
     <Container>
       <Form initialData={profile} onSubmit={handleSubmit}>
-        <AvatarInput name="avatar_id" />
-
-        <Input name="name" placeholder="Nome completo" />
-        <Input name="email" type="email" placeholder="Seu endereço de e-mail" />
-
-        <hr />
-
-        <Input
-          type="password"
-          name="oldPassword"
-          placeholder="Sua senha atual"
-        />
-        <Input type="password" name="password" placeholder="Nova senha" />
-        <Input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmação de senha"
-        />
-        <button type="submit">Atualizar perfil</button>
+        <Col span={12}>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Input name="name" placeholder="Nome completo" />
+            </Col>
+            <Col span={24}>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Seu endereço de e-mail"
+              />
+            </Col>
+            <Col span={24}>
+              <Input
+                type="password"
+                name="oldPassword"
+                placeholder="Sua senha atual"
+              />
+            </Col>
+            <Col span={12}>
+              <Input type="password" name="password" placeholder="Nova senha" />
+            </Col>
+            <Col span={12}>
+              <Input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirmação de senha"
+              />
+            </Col>
+          </Row>
+          <Col span={24}>
+            <button type="submit">Atualizar perfil</button>
+          </Col>
+        </Col>
       </Form>
-
-      <button type="button" onClick={handleSignOut}>
-        Sair do Sistema
-      </button>
+      <Row>
+        <Col span={12}>
+          <button type="button" className="logout" onClick={handleSignOut}>
+            Sair do Sistema
+          </button>
+        </Col>
+      </Row>
     </Container>
   );
 }

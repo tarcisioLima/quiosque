@@ -2,18 +2,16 @@ import styled from 'styled-components';
 import { darken } from 'polished';
 
 export const Container = styled.div`
-  max-width: 600px;
-  margin: 50px auto;
-
   form {
     display: flex;
     flex-direction: column;
     margin-top: 30px;
 
     input {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.7);
       border: 0;
       border-radius: 4px;
+      width: 100%;
       height: 44px;
       padding: 0 15px;
       color: #fff;
@@ -46,6 +44,7 @@ export const Container = styled.div`
       color: #fff;
       border-radius: 4px;
       font-size: 16px;
+      width: 100%;
       transition: background 0.2s;
 
       &:hover {
@@ -65,7 +64,7 @@ export const Container = styled.div`
     }
   }
 
-  & > button {
+  .logout {
     width: 100%;
     margin: 10px 0 0;
     height: 44px;
