@@ -1,9 +1,19 @@
 import Sequelize from 'sequelize';
 import User from '../app/models/User';
 import Product from '../app/models/Product';
+import Cashier from '../app/models/Cashier';
+import CashierOperation from '../app/models/CashierOperation';
+import CashierOperationHistory from '../app/models/CashierOperationHistory';
+
 import databaseConfig from '../config/database';
 
-const models = [User, Product];
+const models = [
+  User,
+  Product,
+  Cashier,
+  CashierOperation,
+  CashierOperationHistory,
+];
 
 class Database {
   constructor() {

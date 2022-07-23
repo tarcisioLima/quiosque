@@ -16,13 +16,15 @@ export default function Header() {
           <Link to="/dashboard">Painel Administrativo</Link>
         </nav>
         <aside>
-          <Profile>
-            <div>
-              <strong>{profile.name}</strong>
-              <Link to="/profile">Meu Perfil</Link>
-            </div>
-            <UserOutlined style={{ fontSize: 32, color: '#999' }} />
-          </Profile>
+          {profile !== null ? (
+            <Profile>
+              <div>
+                <strong>{profile.name}</strong>
+                <Link to="/profile">Meu Perfil</Link>
+              </div>
+              <UserOutlined style={{ fontSize: 32, color: '#999' }} />
+            </Profile>
+          ) : null}
         </aside>
       </Content>
     </Container>

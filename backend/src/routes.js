@@ -2,6 +2,7 @@ import { Router } from 'express';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ProductController from './app/controllers/ProductController';
+import CashierOperationController from './app/controllers/CashierOperationController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -18,5 +19,7 @@ routes.get('/products', ProductController.index);
 routes.post('/products', ProductController.store);
 routes.put('/products/:id', ProductController.update);
 routes.delete('/products/:id', ProductController.remove);
+
+routes.get('/cashier', CashierOperationController.index);
 
 export default routes;
