@@ -1,14 +1,21 @@
-import Sequelize, { Model } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 
 class Cashier extends Model {
   static init(sequelize) {
     super.init(
       {
-        amount: Sequelize.FLOAT,
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
+        amount: DataTypes.FLOAT,
+        createdAt: {
+          field: 'created_at',
+          type: DataTypes.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: DataTypes.DATE,
+        },
       },
       {
+        modelName: 'cashier',
         sequelize,
       }
     );

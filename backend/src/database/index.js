@@ -20,12 +20,21 @@ class Database {
     this.init();
   }
 
-  init() {
-    this.connection = new Sequelize(databaseConfig);
+  async init() {
+    const uri = `postgres://${databaseConfig.username}:${databaseConfig.password}@${databaseConfig.host}/${databaseConfig.database}`;
+    this.connection = new Sequelize(uri);
 
-    models
+    try {
+      await this.connection.authenticate();
+      console.log('Database Connection has been established successfully.');
+
+      models
       .map(model => model.init(this.connection))
       .map(model => model.associate && model.associate(this.connection.models));
+
+    } catch (error) {
+      console.error('Unable to connect to the database:', error);
+    }
   }
 }
 

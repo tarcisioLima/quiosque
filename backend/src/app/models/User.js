@@ -1,17 +1,27 @@
-import Sequelize, { Model } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
 class User extends Model {
   static init(sequelize) {
+   
     super.init(
       {
-        name: Sequelize.STRING,
-        email: Sequelize.STRING,
-        password: Sequelize.VIRTUAL,
-        password_hash: Sequelize.STRING,
+        name: DataTypes.STRING,
+        email: DataTypes.STRING,
+        password: DataTypes.VIRTUAL,
+        password_hash: DataTypes.STRING,
+        createdAt: {
+          field: 'created_at',
+          type: DataTypes.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: DataTypes.DATE,
+        },
       },
       {
         sequelize,
+        modelName: 'user',
       }
     );
 

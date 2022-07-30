@@ -1,15 +1,22 @@
-import Sequelize, { Model } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 
 class CashierOperationHistory extends Model {
   static init(sequelize) {
     super.init(
       {
-        cashier_id: Sequelize.INTEGER,
-        cashier_operation_id: Sequelize.INTEGER,
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
+        cashier_id: DataTypes.INTEGER,
+        cashier_operation_id: DataTypes.INTEGER,
+        createdAt: {
+          field: 'created_at',
+          type: DataTypes.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: DataTypes.DATE,
+        },
       },
       {
+        modelName: 'cashier_operation_history',
         sequelize,
       }
     );
@@ -18,8 +25,8 @@ class CashierOperationHistory extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Cashier, { foreignKey: 'cashier_id', as: 'cashier' });
-    this.belongsTo(models.CashierOperation, {
+    this.belongsTo(models.cashier, { foreignKey: 'cashier_id', as: 'cashier' });
+    this.belongsTo(models.cashier_operation, {
       foreignKey: 'cashier_operation_id',
       as: 'cashier_operation',
     });

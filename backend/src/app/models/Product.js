@@ -1,18 +1,25 @@
-import Sequelize, { Model } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 
 class Products extends Model {
   static init(sequelize) {
     super.init(
       {
-        name: Sequelize.STRING,
-        sell_price: Sequelize.FLOAT,
-        cost_price: Sequelize.FLOAT,
-        code: Sequelize.STRING,
-        disabled: Sequelize.BOOLEAN,
-        created_at: Sequelize.DATE,
-        updated_at: Sequelize.DATE,
+        name: DataTypes.STRING,
+        sell_price: DataTypes.FLOAT,
+        cost_price: DataTypes.FLOAT,
+        code: DataTypes.STRING,
+        disabled: DataTypes.BOOLEAN,
+        createdAt: {
+          field: 'created_at',
+          type: DataTypes.DATE,
+        },
+        updatedAt: {
+          field: 'updated_at',
+          type: DataTypes.DATE,
+        },
       },
       {
+        modelName: 'product',
         sequelize,
       }
     );

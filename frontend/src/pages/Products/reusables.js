@@ -30,14 +30,14 @@ const columns = (update, remove) => [
   },
   {
     title: 'Data de criação',
-    dataIndex: 'created_at',
-    key: 'created_at',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
     render: (date) => format(parseISO(date), 'dd/MM/yyyy HH:mm:ss'),
   },
   {
     title: 'Data de atualização',
-    dataIndex: 'updated_at',
-    key: 'updated_at',
+    dataIndex: 'updatedAt',
+    key: 'updatedAt',
     render: (date) => format(parseISO(date), 'dd/MM/yyyy HH:mm:ss'),
   },
   {
