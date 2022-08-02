@@ -8,12 +8,26 @@ class CashierOperationController {
       order: [['id', 'DESC']],
     });
 
-    return res.json(history);
+    // Check if has a cashier
+    let cashier = await Cashier.findAll()
+
+    if(!cashier.length){
+      await Cashier.create({amount: 0})
+      cashier = await Cashier.findAll()
+    }
+
+    const data = {
+      cashier: cashier[0],
+      history,
+    }
+
+    return res.json(data);
   }
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      sell_price: Yup.number().required(),
+      action: Yup.mixed().oneOf(['in', 'out', 'open', 'close']),
+      amount: Yup.number().notRequired(),
+      description: Yup.number().notRequired(),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -25,17 +39,44 @@ class CashierOperationController {
       return res.status(400).json(validationResult.errors);
     }
 
-    const { name, sell_price, ...rest } = req.body;
+    const { action, ...rest } = req.body;
 
-    await CashierOperation.create({
-      name,
-      sell_price,
-      ...rest,
-    });
+    // Check if has a cashier
+    let cashier = await Cashier.findAll()
 
+    if(!cashier.length){
+      await Cashier.create({amount: 0})
+      cashier = await Cashier.findAll()
+    }
+
+    if(action === 'in') {
+      const updatedAmount = cashier[0].amount + rest.amount;
+      await Cashier.update({amount: updatedAmount}, { where: { id: cashier[0].id}})
+      await CashierOperation.create({type: action, amount: rest.amount, description: rest.description});
+      return res.status(200).json({ status: 'Caixa atualizado com sucesso' });
+    }
+
+    if(action === 'out') {
+      const updatedAmount = cashier[0].amount - rest.amount;
+      await Cashier.update({amount: updatedAmount}, { where: { id: cashier[0].id}})
+      await CashierOperation.create({type: action, amount: rest.amount, description: rest.description});
+      return res.status(200).json({ status: 'Caixa atualizado com sucesso' });
+    }
+
+    if(action === 'open') {
+      await CashierOperation.create({type: action, description: rest.description});
+      return res.status(200).json({ status: 'Caixa aberto com sucesso' });
+    }
+
+    if(action === 'close') {
+      await CashierOperation.create({type: action, description: rest.description});
+      return res.status(200).json({ status: 'Caixa fechado com sucesso' });
+    }
+
+  
     return res
-      .status(200)
-      .json({ status: `Produto ${name} criado com sucesso!` });
+      .status(400)
+      .json({ status: 'Operação inválida' });
   }
 }
 
