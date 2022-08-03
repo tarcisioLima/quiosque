@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { PushpinOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  PushpinOutlined,
+  HomeOutlined,
+  InboxOutlined,
+} from '@ant-design/icons';
 import { Menu } from 'antd';
 import history from '~/services/history';
 import { withRouter } from 'react-router-dom';
@@ -15,11 +19,17 @@ const menuList = [
     icon: <PushpinOutlined />,
     label: 'Produtos',
   },
+  {
+    key: 'caixa',
+    icon: <InboxOutlined />,
+    label: 'Caixa',
+  },
 ];
 
 const dict = {
   '/dashboard': 'dashboard',
   '/produtos': 'produtos',
+  '/caixa': 'caixa',
 };
 
 const SideMenu = ({ location }) => {
