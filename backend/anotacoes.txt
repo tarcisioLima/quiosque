@@ -89,6 +89,12 @@ yarn sequelize migration:create --name=create-users
 Rodar migration
 yarn sequelize db:migrate
 
+Comandos de seed
+$ yarn sequelize seed:generate --name initial-tables
+$ yarn sequelize db:seed:all 
+$ yarn sequelize db:seed:undo
+$ yarn sequelize db:seed:undo --seed name-of-seed-as-in-data
+
 Ao criar um campo virtual, significa que o campo só vai
 existir no código e não no banco de dados.
 

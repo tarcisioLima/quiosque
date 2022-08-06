@@ -7,7 +7,7 @@ class Table extends Model {
         name: DataTypes.STRING,
         status: DataTypes.ENUM('free', 'opened', 'blocked'),
         type: DataTypes.ENUM('normal', 'sand', 'other'),
-        status: DataTypes.ENUM('open', 'paid'),
+        disabled: DataTypes.BOOLEAN,
         createdAt: {
           field: 'created_at',
           type: DataTypes.DATE,
