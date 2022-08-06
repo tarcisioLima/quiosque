@@ -21,14 +21,9 @@ module.exports = {
         defaultValue: 'table'
       },
       status: {
-        type: Sequelize.ENUM('x', 'paid'),
+        type: Sequelize.ENUM('open', 'paid'),
         allowNull: false,
-        defaultValue: 'x',               
       },
-      /*payment_type: {
-        type: Sequelize.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
-        allowNull: true,
-      },*/
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

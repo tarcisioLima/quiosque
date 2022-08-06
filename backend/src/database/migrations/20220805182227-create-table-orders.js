@@ -31,10 +31,6 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: true,
       },
-      /*payment_type: {
-        type: Sequelize.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
-        allowNull: true,
-      },*/
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
