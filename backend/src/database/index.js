@@ -4,6 +4,11 @@ import Product from '../app/models/Product';
 import Cashier from '../app/models/Cashier';
 import CashierOperation from '../app/models/CashierOperation';
 import CashierOperationHistory from '../app/models/CashierOperationHistory';
+import Order from '../app/models/Order';
+import OrderProduct from '../app/models/OrderProduct';
+import Table from '../app/models/Table';
+import TableOrder from '../app/models/TableOrder';
+import Shift from '../app/models/Shift';
 
 import databaseConfig from '../config/database';
 
@@ -13,6 +18,11 @@ const models = [
   Cashier,
   CashierOperation,
   CashierOperationHistory,
+  Order,
+  OrderProduct,
+  Table,
+  TableOrder,
+  Shift,
 ];
 
 class Database {
