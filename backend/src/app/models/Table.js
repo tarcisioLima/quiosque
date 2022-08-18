@@ -25,6 +25,13 @@ class Table extends Model {
 
     return this;
   }
+  static associate(models) {
+    this.belongsToMany(models.order, {
+      through: "table_order",
+      as: "orders",
+      foreignKey: "table_id",
+    })
+  }
 }
 
 export default Table;

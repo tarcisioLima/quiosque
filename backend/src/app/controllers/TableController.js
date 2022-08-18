@@ -1,24 +1,19 @@
 import Yup from '../../config/yup';
 import Table from '../models/Table';
-import TableOrder from '../models/TableOrder';
+import Order from '../models/Order';
 
 class TableController {
   async index(_, res) {
     const tables = await Table.findAll({
       order: [['id', 'ASC']],
-      where: { disabled: false },     
+      where: { disabled: false },
+      include: [
+        {
+          model: Order,
+          as: "orders",
+        },
+      ]
     });
-
-    const tableOrders = tables.map(async (_table) => {
-      const orders = await TableOrder.findAll({
-        where: { table_id: _table.id}
-      });
-     
-      return {
-        ..._table,
-        orders
-      }
-    })
 
     return res.json(tables);
   }
