@@ -24,7 +24,15 @@ routes.get('/cashier', CashierOperationController.index);
 routes.post('/cashier', CashierOperationController.store);
 
 routes.get('/order', OrderController.index);
+routes.post('/order', OrderController.store);
+routes.put('/order/:id', OrderController.update);
+routes.post('/order/:id/add-product/:product_id', OrderController.addProduct);
+routes.post('/order/:id/remove-product/:order_product_id', OrderController.removeProduct);
+
 
 routes.get('/table', TableController.index);
+routes.post('/table', TableController.store);
+routes.put('/table/:id', TableController.update);
+routes.delete('/table/:id', TableController.remove);
 
 export default routes;

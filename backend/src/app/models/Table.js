@@ -8,6 +8,8 @@ class Table extends Model {
         status: DataTypes.ENUM('free', 'opened', 'blocked'),
         type: DataTypes.ENUM('normal', 'sand', 'other'),
         disabled: DataTypes.BOOLEAN,
+        discount_amount: DataTypes.FLOAT,
+        payment_type: DataTypes.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
         createdAt: {
           field: 'created_at',
           type: DataTypes.DATE,

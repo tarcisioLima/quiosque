@@ -19,8 +19,9 @@ class TableController {
   }
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      sell_price: Yup.number().required(),
+      name: Yup.string().notRequired(),
+      status: Yup.mixed().oneOf(['free', 'opened', 'blocked']).required(),
+      type: Yup.mixed().oneOf(['normal', 'sand', 'other']).notRequired(),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -32,23 +33,20 @@ class TableController {
       return res.status(400).json(validationResult.errors);
     }
 
-    const { name, sell_price, ...rest } = req.body;
 
-    await Order.create({
-      name,
-      sell_price,
-      ...rest,
-    });
+    await Table.create({...req.body});
 
     return res
       .status(200)
-      .json({ status: `Comanda criada com sucesso!` });
+      .json({ status: `Mesa criada com sucesso!` });
   }
   async update(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      sell_price: Yup.number().required(),
+      name: Yup.string().notRequired(),
+      status: Yup.mixed().oneOf(['free', 'opened', 'blocked']).required(),
+      type: Yup.mixed().oneOf(['normal', 'sand', 'other']).notRequired(),
     });
+
 
     if (!schema.isValidSync(req.body)) {
       const validationResult = await schema
@@ -59,25 +57,25 @@ class TableController {
       return res.status(400).json(validationResult.errors);
     }
 
-    const product = await Product.findByPk(req.params.id);
-    await product.update(req.body);
+    const table = await Table.findByPk(req.params.id);
+    await table.update(req.body);
 
     return res
       .status(200)
-      .json({ status: `Produto ${product.name} atualizado com sucesso!` });
+      .json({ status: `Mesa atualizada com sucesso!` });
   }
   async remove(req, res) {
-    const product = await Product.findByPk(req.params.id);
+    const table = await Table.findByPk(req.params.id);
 
-    if (!product) {
-      return res.status(400).json({ status: 'Produto não encontrado' });
+    if (!table) {
+      return res.status(400).json({ status: 'Mesa não encontrada' });
     }
 
-    await product.destroy();
+    await table.update({ disabled: true });
 
     return res
       .status(200)
-      .json({ status: `Produto ${product.name} deletado com sucesso!` });
+      .json({ status: `Mesa ${table.id} deletada com sucesso!` });
   }
 }
 

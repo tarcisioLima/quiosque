@@ -4,6 +4,11 @@ class OrderProduct extends Model {
   static init(sequelize) {
     super.init(
       {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
         order_id: DataTypes.INTEGER,
         product_id: DataTypes.INTEGER,
         quantity: DataTypes.INTEGER,
