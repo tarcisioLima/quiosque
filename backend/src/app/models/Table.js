@@ -6,7 +6,21 @@ class Table extends Model {
       {
         name: DataTypes.STRING,
         status: DataTypes.ENUM('free', 'opened', 'blocked'),
+        status_label: {
+          type: DataTypes.VIRTUAL,
+          get: function() {
+            const dict = {free: 'livre', opened: 'aberta', blocked: 'bloqueada'};
+            return dict[this.get('status')]
+          }
+        },
         type: DataTypes.ENUM('normal', 'sand', 'other'),
+        type_label: {
+          type: DataTypes.VIRTUAL,
+          get: function() {
+            const dict = {normal: 'comum', sand: 'areia', other: 'outro'};
+            return dict[this.get('type')]
+          }
+        },
         disabled: DataTypes.BOOLEAN,
         discount_amount: DataTypes.FLOAT,
         payment_type: DataTypes.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),

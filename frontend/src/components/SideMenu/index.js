@@ -3,6 +3,7 @@ import {
   PushpinOutlined,
   HomeOutlined,
   InboxOutlined,
+  MoneyCollectOutlined
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import history from '~/services/history';
@@ -20,6 +21,11 @@ const menuList = [
     label: 'Produtos',
   },
   {
+    key: 'vendas',
+    icon: <MoneyCollectOutlined />,
+    label: 'Vendas',
+  },
+  {
     key: 'caixa',
     icon: <InboxOutlined />,
     label: 'Caixa',
@@ -30,6 +36,7 @@ const dict = {
   '/dashboard': 'dashboard',
   '/produtos': 'produtos',
   '/caixa': 'caixa',
+  '/vendas': 'vendas',
 };
 
 const SideMenu = ({ location }) => {
