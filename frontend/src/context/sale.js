@@ -14,10 +14,10 @@ import React, {
     const [open, setOpen] = useState(false);
     const [actionType, setActionType] = useState('create');
     const [current, setCurrent] = useState(null);
-    const [list, setList] = useState([]);
     const [loading, setLoading] = useState([]);
     const [loadingTable, setLoadingTable] = useState([]);
     const [tables, setTables] = useState([]);
+    const [products, setProducts] = useState([]);
     const [form] = Form.useForm();
   
     const fetchProducts = useCallback(async () => {
@@ -26,7 +26,7 @@ import React, {
       const results = await api.get('/products');
   
       if (results) {
-        setList(results.data);
+        setProducts(results.data);
       }
       setLoading(false);
     }, []);
@@ -41,8 +41,6 @@ import React, {
       }
       setLoadingTable(false);
     }, []);
-
-
   
     const openNewOrder = () => {
       setActionType('create');
@@ -51,7 +49,7 @@ import React, {
       form.resetFields();
     };
   
-    const openUpdateProduct = (_current) => {
+    const openUpdateOrder = (_current) => {
       setActionType('update');
       setOpen(true);
       setCurrent(_current);
@@ -104,11 +102,10 @@ import React, {
           current,
           setCurrent,
           loading,
-          list,
           setLoading,
           fetchProducts,
           openNewOrder,
-          openUpdateProduct,
+          openUpdateOrder,
           closeDrawer,
           actionType,
           setActionType,
@@ -119,6 +116,7 @@ import React, {
           setLoadingTable,
           fetchTables,
           tables,
+          products,
         }}
       >
         {children}

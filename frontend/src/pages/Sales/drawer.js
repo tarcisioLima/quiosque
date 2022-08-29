@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   Button,
   Col,
@@ -8,14 +8,22 @@ import {
   InputNumber,
   Radio,
   Row,
-  Switch,
+  Typography,
+  Divider,
   Select,
+  Table,
   Space,
+  message,
 } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { useSale } from '~/context/sale';
 import { formatNumber, parserNumber } from '~/utils/currencyMask';
+import formatCash from '~/utils/formatCash';
+
+import { columnsOrderProduct } from './reusables';
 
 const { Option } = Select;
+const { Title } = Typography
 
 const initVals = {
   customer_name: '',
@@ -24,16 +32,20 @@ const initVals = {
 
 const SaleDrawer = () => {
   const [initialValues, setInitialValues] = useState(initVals);
+  const [formValues, setFormValues] = useState({});
+  const [orderProducts, setOrderProducts] = useState([]);
+  const [productOrder, setProductOrder] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   const {
     open,
     current,
-    setCurrent,
     closeDrawer,
     actionType,
     onSubmit,
     form,
     tables,
+    products,
   } = useSale();
 
   const onFinish = (values) => {
@@ -44,6 +56,31 @@ const SaleDrawer = () => {
     const filtered = tables.filter((_t) => _t.status !== 'blocked')
     return filtered;
   }, [tables]);
+
+  const addProductOrder = useCallback(() => {
+    if(quantity < 1) { 
+      message.error('A quantidade não pode ser negativa')
+      return
+    }
+    if(productOrder === null){
+      message.error('Selecione um produto para adicionar')
+      return
+    }
+
+    const __product = products.filter((_p) => _p.id === productOrder)[0]
+    const newProduct = {...__product, quantity}
+    const newList = [newProduct, ...orderProducts];
+    console.log('new list: ', newList)
+    setOrderProducts(newList);
+    setProductOrder(null);
+    setQuantity(1);
+
+  }, [products, quantity, productOrder, orderProducts]);
+
+  const removeProductOrder = useCallback((productIndex) => {
+    const updated = orderProducts.filter((_, index) => index !== productIndex)
+    setOrderProducts(updated)
+  }, [orderProducts]);
 
   useEffect(() => {
     if (current && actionType === 'update') {
@@ -67,7 +104,7 @@ const SaleDrawer = () => {
         <Space>
           <Button onClick={closeDrawer}>Cancelar</Button>
           <Button onClick={() => form.submit()} type="primary">
-            {actionType === 'create' ? 'Nova Venda' : 'Atualizar Venda'}
+            {actionType === 'create' ? 'Criar Venda' : 'Atualizar Venda'}
           </Button>
         </Space>
       }
@@ -78,90 +115,146 @@ const SaleDrawer = () => {
         form={form}
         onFinish={onFinish}
         initialValues={initialValues}
+        onValuesChange={(_, values) => setFormValues(values)}
       >
         <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="customer_name"
-              label="Nome do cliente"
-              rules={[
-                { required: true, message: 'Por favor, adicione um nome' },
-              ]}
-            >
-              <Input placeholder="" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-                name="type"
-                label="Tipo"
+            <Col span={12}>
+              <Form.Item
+                name="customer_name"
+                label="Nome do cliente"
                 rules={[
-                {
-                    required: true,
-                    message: 'Escolha uma opção!',
-                },
+                  { required: true, message: 'Por favor, adicione um nome' },
                 ]}
-            >
-                <Radio.Group>
-                <Radio.Button value="single">Avulso</Radio.Button>
-                <Radio.Button value="table">Mesa</Radio.Button>
-                <Radio.Button value="sand">Areia</Radio.Button>
-                <Radio.Button value="other">Outro</Radio.Button>
-                </Radio.Group>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-                name="table"
-                label="Mesas disponíveis"
-                rules={[
+              >
+                <Input placeholder="" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                  name="type"
+                  label="Tipo"
+                  rules={[
                   {
                       required: true,
-                      message: 'Escolha uma mesa!',
+                      message: 'Escolha uma opção!',
                   },
                   ]}
-            >
-                 <Select
-                    mode="multiple"
-                    allowClear
-                    style={{ width: '100%' }}
-                    placeholder="Por favor selecione a mesa(s)"
-                    defaultValue={[]}
-                    >
-                    {tableOptions.map((_t) => 
-                        <Option value={_t.id} key={_t.id}>Mesa: {_t.name} - Status: {_t.status_label} - Tipo: {_t.type_label}</Option>)}
-                </Select>
-            </Form.Item>
-          </Col>
-          {actionType === 'update' ? (
-          <Col span={12}>
-            <Form.Item
-              name="discount_amount"
-              label="Desconto"
-            >
-              <InputNumber
-                placeholder="Ex: 10,00"
-                formatter={(value) => formatNumber(value)}
-                parser={(value) => parserNumber(value)}
-                style={{ width: '100%' }}
-              />
-            </Form.Item>
-          </Col>) : null }
-
-          {/* {actionType === 'update' ? (
+              >
+                  <Radio.Group>
+                  <Radio.Button value="single">Avulso</Radio.Button>
+                  <Radio.Button value="table">Mesa</Radio.Button>
+                  <Radio.Button value="sand">Areia</Radio.Button>
+                  <Radio.Button value="other">Outro</Radio.Button>
+                  </Radio.Group>
+              </Form.Item>
+            </Col>
+            {formValues.type === 'table' ?
+              <Col span={12}>
+                <Form.Item
+                    name="table"
+                    label="Mesas disponíveis"
+                    rules={[
+                      {
+                          required: true,
+                          message: 'Escolha uma mesa!',
+                      },
+                      ]}
+                >
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="Por favor selecione a mesa(s)"
+                        defaultValue={[]}
+                        >
+                        {tableOptions.map((_t) => 
+                            <Option value={_t.id} key={_t.id}>
+                              MESA: {_t.name} - STATUS: {_t.status_label} - TIPO: {_t.type_label}
+                            </Option>)}
+                    </Select>              
+                </Form.Item>
+              </Col> : null }
             <Col span={12}>
-              <Form.Item label="Desabilitado" name="disabled">
-                <Switch
-                  checked={current && current.disabled}
-                  onChange={() => {
-                    if (current) {
-                      setCurrent({ ...current, disabled: !current.disabled });
-                    }
-                  }}
+              <Form.Item
+                name="discount_amount"
+                label="Desconto"
+              >
+                <InputNumber
+                  placeholder="Ex: 10,00"
+                  formatter={(value) => formatNumber(value)}
+                  parser={(value) => parserNumber(value)}
+                  style={{ width: '100%' }}
                 />
               </Form.Item>
             </Col>
-          ) : null} */}
+
+            <Col span={24}>
+              <Divider>
+                <Title level={5}>Adicionar produtos a esta comanda</Title>
+              </Divider>
+            </Col>
+          
+          {/* ADD PRODUTOS */}
+          <Col span={24}>
+              <Row gutter={6}>
+                <Col span={16}>
+                <Form.Item                  
+                    label="Buscar produtos"
+                  >
+                    <Select
+                      showSearch
+                      style={{ width: '100%' }}
+                      value={productOrder}
+                      onChange={(v) => {
+                        console.log('P: ', v)
+                        setProductOrder(v)
+                      }}
+                      placeholder=""
+                      optionFilterProp="children"
+                      defaultValue={[]}
+                      filterOption={(input, option) => {                      
+                        const join =  option.children.join('').toLowerCase()
+                        return join.toLowerCase().indexOf(input) > -1                      
+                      }}
+                    >
+                      {products.map((_p) => 
+                              <Option value={_p.id} key={_p.id}>
+                                Código: #{_p.id} | {_p.name} - VALOR: {formatCash(_p.sell_price)}
+                              </Option>)}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={4}>
+                  <Form.Item                  
+                      label="Quantidade"
+                    >
+                      <InputNumber
+                        placeholder="1"
+                        value={quantity}
+                        onChange={(v) => setQuantity(v)}
+                        defaultValue={1}
+                        formatter={(value) => formatNumber(value)}
+                        parser={(value) => parserNumber(value)}
+                        style={{ width: '100%' }}
+                      />
+                  </Form.Item>
+                </Col>
+              <Col span={4}>
+                <Form.Item                  
+                      label=" "
+                  >
+                  <Button type="primary" style={{width: '100%'}} onClick={() => addProductOrder()}>
+                    <PlusCircleOutlined />
+                  </Button>
+                </Form.Item>
+              </Col>
+              </Row>
+            </Col>
+           
+           {/* TABELA */}
+           <Col span={24}>
+              <Table columns={columnsOrderProduct(removeProductOrder)} dataSource={orderProducts} />
+           </Col>
         </Row>
       </Form>
     </Drawer>
