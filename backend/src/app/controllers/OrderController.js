@@ -1,5 +1,6 @@
 import Yup from '../../config/yup';
 import Order from '../models/Order';
+import Table from '../models/Table';
 import TableOrder from '../models/TableOrder';
 import Product from '../models/Product';
 import OrderProduct from '../models/OrderProduct';
@@ -26,7 +27,12 @@ class OrderController {
       customer_name: Yup.string().required(),
       discount_amount: Yup.number().notRequired(),
       type: Yup.mixed().oneOf(['table', 'single', 'sand', 'other']).required(),
-      table_id: Yup.number().integer().notRequired(),
+      tables_id: Yup.array().of(Yup.number()).notRequired(),
+      products_id: Yup.array().of(
+        Yup.object().shape({
+        id: Yup.number().required(),
+        quantity: Yup.number().required(),
+      })).notRequired(),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -38,13 +44,35 @@ class OrderController {
       return res.status(400).json(validationResult.errors);
     }
 
-    const { table_id, ...rest } = req.body;
+    const { tables_id, products_id, ...rest } = req.body;
 
     const created = await Order.create({ ...rest, status: 'open' });
 
-    if(table_id && rest.type === 'table'){
-      await TableOrder.create({ table_id, order_id: created.id})
-    }   
+     // Alocação das mesas
+    if(tables_id && rest.type === 'table'){
+      const mainTableId = tables_id[0];
+      await TableOrder.create({ table_id: mainTableId, order_id: created.id})
+     
+      tables_id.forEach(async (_table, index) => {
+        if(index === 0){
+          await Table.update({status: 'opened'}, { where: { id: _table}})
+        }else {
+          await Table.update({status: 'blocked'}, {where: { id: _table}})
+        }
+      });
+    }
+
+    // Adição dos produtos
+    if(products_id){
+      products_id.forEach(async (_product) => {
+        await OrderProduct.create({
+          order_id: created.id,
+          product_id: _product.id,
+          quantity: _product.quantity
+        })
+      });
+    }    
+
 
     return res
       .status(200)
