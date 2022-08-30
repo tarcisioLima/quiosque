@@ -7,8 +7,22 @@ class Order extends Model {
         customer_name: DataTypes.STRING,
         discount_amount: DataTypes.FLOAT,
         type: DataTypes.ENUM('table', 'single', 'sand', 'other'),
+        type_label: {
+          type: DataTypes.VIRTUAL,
+          get: function() {
+            const dict = {table: 'mesa', single: 'avulsa', sand: 'areia', other: 'outro'};
+            return dict[this.get('type')]
+          }
+        },
         payment_type: DataTypes.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
         status: DataTypes.ENUM('open', 'paid'),
+        status_label: {
+          type: DataTypes.VIRTUAL,
+          get: function() {
+            const dict = {open: 'aberta', paid: 'pago'};
+            return dict[this.get('status')]
+          }
+        },
         createdAt: {
           field: 'created_at',
           type: DataTypes.DATE,

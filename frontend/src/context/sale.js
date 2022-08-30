@@ -18,6 +18,8 @@ import React, {
     const [loadingTable, setLoadingTable] = useState([]);
     const [tables, setTables] = useState([]);
     const [products, setProducts] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [openPdfOrder, setOpenPdfOrder] = useState(false);
     const [form] = Form.useForm();
   
     const fetchProducts = useCallback(async () => {
@@ -29,6 +31,15 @@ import React, {
         setProducts(results.data);
       }
       setLoading(false);
+    }, []);
+
+    const fetchOrders = useCallback(async () => {
+      const results = await api.get('/order');
+  
+      if (results) {
+        setOrders(results.data);
+      }
+      
     }, []);
 
     const fetchTables = useCallback(async () => {
@@ -48,6 +59,11 @@ import React, {
       setCurrent(null);
       form.resetFields();
     };
+
+    const openPFFOrder = (order) => {
+      setOpenPdfOrder(true);
+      setCurrent(order);
+    };
   
     const openUpdateOrder = (_current) => {
       setActionType('update');
@@ -61,26 +77,6 @@ import React, {
       form.resetFields();
     };
   
-    const onSubmit = async (values) => {
-      if (actionType === 'create') {
-        const response = await api.post('/products', values);
-  
-        if (response) {
-          toast.success(`${values.name} registrado com sucesso!`);
-          closeDrawer();
-          fetchProducts();
-        }
-      } else if (actionType === 'update') {
-        const { id, ...rest } = current;
-        const response = await api.put(`/products/${id}`, { ...rest, ...values });
-        if (response) {
-          toast.success(`${values.name} atualizado com sucesso!`);
-          closeDrawer();
-          fetchProducts();
-        }
-      }
-    };
-  
     const remove = async (id) => {
       const response = await api.delete(`/products/${id}`);
       if (response) {
@@ -90,6 +86,7 @@ import React, {
     };
   
     useEffect(() => {
+      fetchOrders();
       fetchProducts();
       fetchTables();
     }, []);
@@ -109,14 +106,19 @@ import React, {
           closeDrawer,
           actionType,
           setActionType,
-          onSubmit,
           remove,
           form,
           loadingTable,
           setLoadingTable,
           fetchTables,
+          fetchOrders,
           tables,
           products,
+          orders, 
+          setOrders,
+          openPdfOrder, 
+          setOpenPdfOrder,
+          openPFFOrder,
         }}
       >
         {children}

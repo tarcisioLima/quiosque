@@ -77,7 +77,7 @@ export default createGlobalStyle`
   }
 
   .ant-layout {
-    height: 90vh;  
+    min-height: 90vh;  
   }
 
   a {

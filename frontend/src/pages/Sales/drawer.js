@@ -19,6 +19,8 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import { useSale } from '~/context/sale';
 import { formatNumber, parserNumber } from '~/utils/currencyMask';
 import formatCash from '~/utils/formatCash';
+import noEmptyFields from '~/utils/noEmptyFields';
+import api from '~/services/api';
 
 import { columnsOrderProduct } from './reusables';
 
@@ -40,16 +42,56 @@ const SaleDrawer = () => {
   const {
     open,
     current,
+    fetchTables,
     closeDrawer,
     actionType,
-    onSubmit,
     form,
     tables,
     products,
+    fetchOrders,
   } = useSale();
 
-  const onFinish = (values) => {
-    onSubmit(values);
+  const onFinish = async (values) => {
+    if (actionType === 'create') {
+      
+      const { table, ...rest } = values;
+
+      const products_id = orderProducts.map((_product) => ({
+        id: _product.id,
+        quantity: _product.quantity,
+      }));
+
+      const payload = noEmptyFields({
+        tables_id: table || [],
+        products_id,
+        ...rest
+      })
+
+      console.log('LIXO : ', payload);
+
+      if(values.type === 'single' && orderProducts.length === 0) {
+        message.error('Uma venda avulsa precisa necessáriamente de produtos a serem registrados')
+        return;
+      }
+
+      const response = await api.post('/order', payload);
+
+      if (response) {
+        message.success(`Comanda registrada com sucesso!`);
+        closeDrawer();
+        fetchOrders();
+        fetchTables();
+      }
+    } else if (actionType === 'update') {
+      const { id, ...rest } = current;
+      const response = await api.put(`/products/${id}`, { ...rest, ...values });
+      if (response) {
+        message.success(`Comanda atualizada com sucesso!`);
+        closeDrawer();
+        fetchOrders();
+        fetchTables();
+      }
+    }
   };
 
   const tableOptions = useMemo(() => {
@@ -70,7 +112,7 @@ const SaleDrawer = () => {
     const __product = products.filter((_p) => _p.id === productOrder)[0]
     const newProduct = {...__product, quantity}
     const newList = [newProduct, ...orderProducts];
-    console.log('new list: ', newList)
+
     setOrderProducts(newList);
     setProductOrder(null);
     setQuantity(1);
@@ -102,9 +144,9 @@ const SaleDrawer = () => {
       bodyStyle={{ paddingBottom: 80 }}
       extra={
         <Space>
-          <Button onClick={closeDrawer}>Cancelar</Button>
+          <Button onClick={() => closeDrawer()}>Cancelar</Button>
           <Button onClick={() => form.submit()} type="primary">
-            {actionType === 'create' ? 'Criar Venda' : 'Atualizar Venda'}
+            {actionType === 'create' ? 'Criar Comanda' : 'Atualizar Comanda'}
           </Button>
         </Space>
       }

@@ -23,6 +23,12 @@ const columns = () => [
     render: (price) => (price ? formatCash(price) : '---'),
   },
   {
+    title: 'Descrição',
+    dataIndex: 'description',
+    key: 'description',
+    render: (description) =>  description || '---',
+  },
+  {
     title: 'Data',
     dataIndex: 'createdAt',
     key: 'createdAt',

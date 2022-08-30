@@ -4,17 +4,15 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 // import { columns } from './reusables';
 import Drawer from './drawer';
 import SaleProvider, { useSale } from '~/context/sale';
+import PdfDrawer from './pdfDrawer';
+import OrdersTable from './ordersTable';
 
 const Sales = () => {
   const [value, setValue] = useState('');
   const [filteredList, setFilteredList] = useState([]);
   const {
     list,
-    loading,
     openNewOrder,
-    openUpdateProduct,
-    fetchTables,
-    remove,
   } = useSale();
 
   useEffect(() => {
@@ -31,14 +29,16 @@ const Sales = () => {
         extra={[
           <Button key="1" type="primary" onClick={() => openNewOrder()}>
             <PlusCircleOutlined /> Nova Venda
-          </Button>,
+          </Button>
         ]}
       ></PageHeader>
 
       <Drawer/>
-    
+      <PdfDrawer/>
+
       <Divider orientation="left"></Divider>
-    
+      <OrdersTable />
+
     </div>
   );
 };
