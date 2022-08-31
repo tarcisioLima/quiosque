@@ -10,6 +10,7 @@ import Profile from '~/pages/Profile';
 import Products from '~/pages/Products';
 import Sales from '~/pages/Sales';
 import Cashier from '~/pages/Cashier';
+import Tables from '~/pages/Tables';
 
 export default function Routes() {
   return (
@@ -21,6 +22,7 @@ export default function Routes() {
       <Route path="/produtos" component={Products} isPrivate></Route>
       <Route path="/vendas" component={Sales} isPrivate></Route>
       <Route path="/caixa" component={Cashier} isPrivate></Route>
+      <Route path="/mesas" component={Tables} isPrivate></Route>
       <Route path="/profile" component={Profile} isPrivate></Route>
 
       {/* <Route path="/" component={() => <h1>404</h1>} /> */}
