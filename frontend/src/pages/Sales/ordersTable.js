@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 
 const { Title } = Typography;
 
-const columns = ({ viewNote }) => [
+const columns = ({ viewNote, payOrder, openUpdateOrder }) => [
    {
     title: 'Código',
     dataIndex: 'id',
@@ -32,7 +32,9 @@ const columns = ({ viewNote }) => [
     dataIndex: 'products',
     key: 'products',
     render: (_, record) => {
-        return formatCash(record.products.reduce((acc, curr) => acc+curr.sell_price, 0));
+      const sum = record.products.reduce((acc, curr) => acc+curr.sell_price * curr.order_product.quantity, 0)
+      const d = record.discount_amount || 0;
+      return formatCash(sum - d);
     }
   },
   {
@@ -56,8 +58,8 @@ const columns = ({ viewNote }) => [
     key: 'action',
     render: (_, record) => (
       <Space size="middle">
-        { record.status !== 'paid' ? <a>Editar</a> : null }
-        { record.status !== 'paid' ? <a>Finalizar</a> : null }
+        { record.status !== 'paid' ? <a onClick={() => openUpdateOrder(record)}>Editar</a> : null }
+        { record.status !== 'paid' ? <a onClick={() => payOrder(record)}>Finalizar</a> : null }
         { record.status === 'paid' ? <a onClick={() => viewNote(record)}>Visualizar Nota</a> : null }       
       </Space>
     ),
@@ -65,16 +67,20 @@ const columns = ({ viewNote }) => [
 ];
 
 const OrdersTable = () => {
-    const { orders, openPFFOrder } = useSale();
+    const { orders, openPFFOrder, triggerOpenPayModal, openUpdateOrder } = useSale();
 
     const viewNote = (order) => {
         openPFFOrder(order)
     }
 
+    const payOrder = (order) => {
+      triggerOpenPayModal(order);
+    }
+
     return (
         <>
             <Title level={2}>Comandas</Title>
-            <Table columns={columns({viewNote})} dataSource={orders} />
+            <Table columns={columns({viewNote, payOrder, openUpdateOrder })} dataSource={orders} />
         </>
     )
 }

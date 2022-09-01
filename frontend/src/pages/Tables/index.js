@@ -63,6 +63,7 @@ const Tables = () => {
                     </Tag>
 
                     <Divider orientation='left'></Divider>
+                    
                 </div>
               </Card>
             </Col>

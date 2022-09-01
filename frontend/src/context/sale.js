@@ -20,6 +20,8 @@ import React, {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [openPdfOrder, setOpenPdfOrder] = useState(false);
+    const [openPayOrderModal, setOpenPayOrderModal] = useState(false);
+
     const [form] = Form.useForm();
   
     const fetchProducts = useCallback(async () => {
@@ -62,6 +64,11 @@ import React, {
 
     const openPFFOrder = (order) => {
       setOpenPdfOrder(true);
+      setCurrent(order);
+    };
+
+    const triggerOpenPayModal = (order) => {
+      setOpenPayOrderModal(true);
       setCurrent(order);
     };
   
@@ -119,6 +126,9 @@ import React, {
           openPdfOrder, 
           setOpenPdfOrder,
           openPFFOrder,
+          openPayOrderModal, 
+          setOpenPayOrderModal,
+          triggerOpenPayModal,
         }}
       >
         {children}

@@ -6,6 +6,7 @@ class TableOrder extends Model {
       {
         table_id: DataTypes.INTEGER,
         order_id: DataTypes.INTEGER,
+        gathered_tables: DataTypes.STRING,
         createdAt: {
           field: 'created_at',
           type: DataTypes.DATE,

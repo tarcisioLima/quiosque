@@ -51,7 +51,9 @@ class OrderController {
      // Alocação das mesas
     if(tables_id && rest.type === 'table'){
       const mainTableId = tables_id[0];
-      await TableOrder.create({ table_id: mainTableId, order_id: created.id})
+      const gathered_tables = tables_id.join(',');
+
+      await TableOrder.create({ table_id: mainTableId, order_id: created.id, gathered_tables})
      
       tables_id.forEach(async (_table, index) => {
         if(index === 0){
@@ -82,9 +84,11 @@ class OrderController {
     const schema = Yup.object().shape({
       customer_name: Yup.string().required(),
       discount_amount: Yup.number().notRequired(),
+      payment_type: Yup.mixed().oneOf(['cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other']).notRequired(),
       type: Yup.mixed().oneOf(['table', 'single', 'sand', 'other']).required(),
       status: Yup.mixed().oneOf(['open', 'paid']).required(),
       table_id: Yup.number().integer().notRequired(),
+      is_transaction: Yup.boolean().notRequired().default(false),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -103,9 +107,11 @@ class OrderController {
     }
 
     // Transacionar comanda
-    const { table_id, ...rest } = req.body;
+    const { table_id, is_transaction,  ...rest } = req.body;
     
-    await transactionOrder(order, rest.type, table_id, res)    
+    if(is_transaction){
+      await transactionOrder(order, rest.type, table_id, res)
+    } 
 
     await order.update(rest);    
 
@@ -156,11 +162,15 @@ class OrderController {
   }
   async removeProduct(req, res) {
     const order = await Order.findByPk(req.params.id);
-    const orderproduct = await OrderProduct.findByPk(req.params.order_product_id);
 
     if (!order) {
       return res.status(400).json({ status: 'Comanda não encontrada' });
     }
+
+    const orderproduct = await OrderProduct.findOne({
+      order_id: order.id,
+      product_id: req.params.order_product_id
+    });
 
     if (!orderproduct) {
       return res.status(400).json({ status: 'Não encontrado' });
@@ -168,7 +178,8 @@ class OrderController {
 
     await OrderProduct.destroy({
       where: { 
-       id: orderproduct.id
+        order_id: order.id,
+        product_id: req.params.order_product_id
       }
     });
 

@@ -101,4 +101,12 @@ export default createGlobalStyle`
   .site-layout .site-layout-background {
     background: #fff;
   }
+
+  .orderAmount {
+    color: green;
+  }
+
+  .print-btn-order {
+    text-align: right;
+  }
 `;

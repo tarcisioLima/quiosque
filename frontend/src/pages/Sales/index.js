@@ -5,10 +5,10 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import Drawer from './drawer';
 import SaleProvider, { useSale } from '~/context/sale';
 import PdfDrawer from './pdfDrawer';
+import PayOrderModal from './payOrderModal';
 import OrdersTable from './ordersTable';
 
 const Sales = () => {
-  const [value, setValue] = useState('');
   const [filteredList, setFilteredList] = useState([]);
   const {
     list,
@@ -35,6 +35,7 @@ const Sales = () => {
 
       <Drawer/>
       <PdfDrawer/>
+      <PayOrderModal />
 
       <Divider orientation="left"></Divider>
       <OrdersTable />

@@ -30,3 +30,24 @@ export const columnsOrderProduct = (remove) => [
       ),
     },
   ];
+
+
+export const columnsProduct = [
+  {
+    title: 'Nome',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+      title: 'Quantidade',
+      dataIndex: 'order_product',
+      key: 'order_product',
+      render: (order_product) => order_product.quantity
+    },
+  {
+    title: 'Valor Unitário',
+    dataIndex: 'sell_price',
+    key: 'sell_price',
+    render: (value) => formatCash(value)
+  },
+];

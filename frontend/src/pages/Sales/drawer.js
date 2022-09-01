@@ -30,6 +30,7 @@ const { Title } = Typography
 const initVals = {
   customer_name: '',
   type: '',
+  discount_amount: 0,
 }
 
 const SaleDrawer = () => {
@@ -67,7 +68,6 @@ const SaleDrawer = () => {
         ...rest
       })
 
-      console.log('LIXO : ', payload);
 
       if(values.type === 'single' && orderProducts.length === 0) {
         message.error('Uma venda avulsa precisa necessáriamente de produtos a serem registrados')
@@ -84,7 +84,11 @@ const SaleDrawer = () => {
       }
     } else if (actionType === 'update') {
       const { id, ...rest } = current;
-      const response = await api.put(`/products/${id}`, { ...rest, ...values });
+      const payload = noEmptyFields({
+        ...rest, 
+        ...values
+      })
+      const response = await api.put(`/order/${id}`, payload);
       if (response) {
         message.success(`Comanda atualizada com sucesso!`);
         closeDrawer();
@@ -99,7 +103,7 @@ const SaleDrawer = () => {
     return filtered;
   }, [tables]);
 
-  const addProductOrder = useCallback(() => {
+  const addProductOrder = useCallback(async () => {
     if(quantity < 1) { 
       message.error('A quantidade não pode ser negativa')
       return
@@ -113,21 +117,52 @@ const SaleDrawer = () => {
     const newProduct = {...__product, quantity}
     const newList = [newProduct, ...orderProducts];
 
+    if(actionType === 'update'){
+      await api.post(`/order/${current.id}/add-product/${__product.id}`, { quantity })
+      fetchOrders()
+    }
+
+    message.success('Produto adicionado')
+
     setOrderProducts(newList);
     setProductOrder(null);
     setQuantity(1);
 
-  }, [products, quantity, productOrder, orderProducts]);
+  }, [products, quantity, productOrder, orderProducts, current]);
 
-  const removeProductOrder = useCallback((productIndex) => {
+  const removeProductOrder = useCallback(async (productIndex) => {
     const updated = orderProducts.filter((_, index) => index !== productIndex)
+
+    if(actionType === 'update'){
+      await api.post(`/order/${current.id}/remove-product/${orderProducts[productIndex].id}`);
+      fetchOrders();
+    }
+
+    message.success('Produto removido');
+
     setOrderProducts(updated)
-  }, [orderProducts]);
+  }, [orderProducts, current]);
+
+  const calcTotalProduts = (_products = [], discount=0) => {
+    const d = discount || 0;
+    const result = _products.reduce((acc, curr) => acc + curr.sell_price * curr.quantity, 0);
+    return result - d;
+  }
 
   useEffect(() => {
     if (current && actionType === 'update') {
       form.setFieldsValue(current);
+
+      if(current.products) {
+        setOrderProducts(current.products.map((_product) => ({
+          name: _product.name,
+          id: _product.id,
+          quantity: _product.order_product.quantity,
+          sell_price: _product.sell_price,
+        })));
+      }
     }
+    
   }, [open, actionType, current, form]);
 
   return (
@@ -135,7 +170,7 @@ const SaleDrawer = () => {
       title={
         actionType === 'create'
           ? 'Criar comanda'
-          : `Atualizar ${current && current.name}`
+          : `Atualizar ${current && current.customer_name}`
       }
       width={720}
       onClose={closeDrawer}
@@ -296,6 +331,10 @@ const SaleDrawer = () => {
            {/* TABELA */}
            <Col span={24}>
               <Table columns={columnsOrderProduct(removeProductOrder)} dataSource={orderProducts} />
+              { actionType === 'update' && current !== null ? <>
+                <Title level={5} style={{margin:0}}>SUB TOTAL: <span className="orderAmount">{formatCash(calcTotalProduts(orderProducts))}</span></Title>
+                <Title level={4} style={{margin:0}}>TOTAL: <span className="orderAmount">{formatCash(calcTotalProduts(orderProducts, formValues.discount_amount))}</span></Title>       
+              </> : null}
            </Col>
         </Row>
       </Form>
