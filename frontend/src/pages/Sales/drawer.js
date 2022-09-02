@@ -13,6 +13,7 @@ import {
   Select,
   Table,
   Space,
+  Tooltip,
   message,
 } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
@@ -20,9 +21,10 @@ import { useSale } from '~/context/sale';
 import { formatNumber, parserNumber } from '~/utils/currencyMask';
 import formatCash from '~/utils/formatCash';
 import noEmptyFields from '~/utils/noEmptyFields';
+import objectOnlyWantedKeys from '~/utils/objectOnlyWantedKeys';
 import api from '~/services/api';
 
-import { columnsOrderProduct } from './reusables';
+import { columnsOrderProduct, getByIdInList } from './reusables';
 
 const { Option } = Select;
 const { Title } = Typography
@@ -30,6 +32,7 @@ const { Title } = Typography
 const initVals = {
   customer_name: '',
   type: '',
+  transfer_to: '',
   discount_amount: 0,
 }
 
@@ -53,8 +56,7 @@ const SaleDrawer = () => {
   } = useSale();
 
   const onFinish = async (values) => {
-    if (actionType === 'create') {
-      
+    if (actionType === 'create') {     
       const { table, ...rest } = values;
 
       const products_id = orderProducts.map((_product) => ({
@@ -62,8 +64,20 @@ const SaleDrawer = () => {
         quantity: _product.quantity,
       }));
 
+      // Checar se ao juntar mesas tem alguma aberta
+      const tables_id = table || []
+
+      if(tables_id.length > 1){
+        // todos mesas precisam estar livres
+        const free_tables = tables_id.filter((_id) => getByIdInList(tables, _id).status === 'free');
+        if(free_tables.length !== tables_id.length){
+          message.error('Para juntar mesas, todas precisam estar livres');
+          return;
+        }
+      }
+
       const payload = noEmptyFields({
-        tables_id: table || [],
+        tables_id,
         products_id,
         ...rest
       })
@@ -83,10 +97,23 @@ const SaleDrawer = () => {
         fetchTables();
       }
     } else if (actionType === 'update') {
-      const { id, ...rest } = current;
+      const { id, ...rest_current } = current;
+      const { transfer_to, ...rest_values } = values;
+      const transfer_to_final =  transfer_to ? String(transfer_to) : null;
+
       const payload = noEmptyFields({
-        ...rest, 
-        ...values
+        transfer_to: transfer_to_final,
+        is_transaction: transfer_to_final ? true : null, 
+        ...objectOnlyWantedKeys(rest_current, [
+          'customer_name', 
+          'discount_amount',
+          'type',
+          'status',
+        ]),
+        ...objectOnlyWantedKeys(rest_values, [
+          'customer_name',
+          'discount_amount',
+        ]),
       })
       const response = await api.put(`/order/${id}`, payload);
       if (response) {
@@ -161,6 +188,8 @@ const SaleDrawer = () => {
           sell_price: _product.sell_price,
         })));
       }
+    }else {
+      setOrderProducts([]);
     }
     
   }, [open, actionType, current, form]);
@@ -206,26 +235,68 @@ const SaleDrawer = () => {
                 <Input placeholder="" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                  name="type"
-                  label="Tipo"
-                  rules={[
-                  {
-                      required: true,
-                      message: 'Escolha uma opção!',
-                  },
-                  ]}
-              >
-                  <Radio.Group>
-                  <Radio.Button value="single">Avulso</Radio.Button>
-                  <Radio.Button value="table">Mesa</Radio.Button>
-                  <Radio.Button value="sand">Areia</Radio.Button>
-                  <Radio.Button value="other">Outro</Radio.Button>
-                  </Radio.Group>
-              </Form.Item>
-            </Col>
-            {formValues.type === 'table' ?
+
+              <Col span={12}>
+                <Form.Item
+                    name="type"
+                    label="Tipo"
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Escolha uma opção!',
+                    },
+                    ]}
+                >
+                    <Radio.Group>
+                    <Radio.Button value="single" disabled={actionType === 'update'}>Avulso</Radio.Button>
+                    <Radio.Button value="table" disabled={actionType === 'update'}>
+                      {actionType === 'update' && current && current.tables[0] ?
+                        <Tooltip 
+                          title={`mesa atual: ${current.tables[0].name} - ${current.tables[0].status_label}`} color="green">
+                          Mesa
+                        </Tooltip> : 'Mesa'}
+                    </Radio.Button>
+                   
+                    
+                    <Radio.Button value="sand" disabled={actionType === 'update'}>Areia</Radio.Button>
+                    <Radio.Button value="other" disabled={actionType === 'update'}>Outro</Radio.Button>
+                    </Radio.Group>
+                </Form.Item>
+              </Col>
+              { actionType === 'update' && current ?
+                <Col span={12}>
+                  <Form.Item
+                      name="transfer_to"
+                      label="Transferir comanda para"
+                      rules={[
+                      {
+                          required: false,
+                          message: 'Escolha uma opção!',
+                      },
+                      ]}
+                  >
+                      <Select
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="transferir"
+                        defaultValue={[]}
+                        >
+                        { current.type !== 'single' ? <Option value="single">Avulso</Option> : null }
+                        { current.type !== 'sand' ? <Option value="sand">Areia</Option> : null }
+                        { current.type !== 'other' ? <Option value="other">Outro</Option> : null }
+                        {tableOptions.filter((_table) => {
+                          if(current && current.tables[0]){
+                            return _table.id !== current.tables[0].id
+                          }
+                          return true;                          
+                        }).map((_t) =>
+                            <Option value={_t.id} key={_t.id}>
+                              MESA: {_t.name} - STATUS: {_t.status_label} - TIPO: {_t.type_label}
+                            </Option>)}
+                        </Select>
+                  </Form.Item>
+                </Col> : null }
+            {formValues.type === 'table' && actionType === 'create' ?
               <Col span={12}>
                 <Form.Item
                     name="table"

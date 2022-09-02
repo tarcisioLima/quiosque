@@ -51,3 +51,8 @@ export const columnsProduct = [
     render: (value) => formatCash(value)
   },
 ];
+
+export const getByIdInList = (list=[], id) => {
+  const filtered = list.filter((_item) => _item.id === id);
+  return filtered[0]
+}

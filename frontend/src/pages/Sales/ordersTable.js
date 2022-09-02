@@ -46,6 +46,14 @@ const columns = ({ viewNote, payOrder, openUpdateOrder }) => [
     }
   },
   {
+    title: 'Mesa',
+    dataIndex: 'tables',
+    key: 'tables',
+    render: (tables) => {
+        return tables.length > 0 ? tables[0].name : '---'
+    }
+  },
+  {
     title: 'Data criação',
     dataIndex: 'createdAt',
     key: 'createdAt',

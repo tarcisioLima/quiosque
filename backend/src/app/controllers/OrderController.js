@@ -6,7 +6,8 @@ import Product from '../models/Product';
 import OrderProduct from '../models/OrderProduct';
 import closeOrder from '../utils/closeOrder';
 import transactionOrder from '../utils/transactionOrder';
-
+import isNumber from '../utils/isNumber';
+import getJoinedTables from '../utils/getJoinedTables';
 
 class OrderController {
   async index(_, res) {
@@ -17,8 +18,25 @@ class OrderController {
           model: Product,
           as: "products",
         },
+        {
+          model: Table,
+          as: "tables",
+        }
       ]
     });
+
+    /* const updated = orders.map(async (_order) => {
+      if(_order.tables.length && _order.tables[0].table_order.gathered_tables){
+        const in_joined_table = getJoinedTables(_order.tables[0].table_order.gathered_tables);
+        console.log('ENTROU: ', in_joined_table)
+        return {
+          ..._order,
+          in_joined_table,
+        }
+      }
+      return _order;
+    }) */
+ 
 
     return res.json(orders);
   }
@@ -89,6 +107,7 @@ class OrderController {
       status: Yup.mixed().oneOf(['open', 'paid']).required(),
       table_id: Yup.number().integer().notRequired(),
       is_transaction: Yup.boolean().notRequired().default(false),
+      transfer_to: Yup.string().notRequired(),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -107,13 +126,28 @@ class OrderController {
     }
 
     // Transacionar comanda
-    const { table_id, is_transaction,  ...rest } = req.body;
+    const { table_id, is_transaction, transfer_to, ...rest } = req.body;
     
-    if(is_transaction){
-      await transactionOrder(order, rest.type, table_id, res)
+    if(is_transaction){      
+      let type_of_table = rest.type;
+      let table_id_transfer = table_id;
+
+      if(transfer_to) {
+        type_of_table = isNumber(transfer_to) ? 'table' : transfer_to;
+        table_id_transfer = transfer_to;
+      }
+
+      try {
+        await transactionOrder(order, type_of_table, table_id_transfer, res)
+      }catch(err) {
+        console.log('Err: ', err)
+      }
     } 
 
-    await order.update(rest);    
+    await order.update({
+      ...rest,
+      type: !isNumber(transfer_to) ? transfer_to : rest.type,
+    });    
 
     // Se comanda foi paga, atualizar o caixa
     if(req.body.status === 'paid'){
