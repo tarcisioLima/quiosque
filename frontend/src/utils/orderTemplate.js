@@ -1,5 +1,7 @@
 import jsPDFInvoiceTemplate, { OutputType } from "jspdf-invoice-template";
 import whiteLabelConfig from '~/config/whiteLabel';
+import { format, parseISO } from "date-fns";
+import formatCash from "./formatCash";
 
 const propsObject = {
     outputType: OutputType.DataUriString,
@@ -37,7 +39,7 @@ const propsObject = {
     },
     invoice: {
         label: "Nota #: ",
-        num: 19,
+        num: 0,
         invDate: "Data de Pagamento: 01/01/2021 18:12",
         invGenDate: "Data Emissão da Nota: 02/02/2021 10:17",
         headerBorder: false,
@@ -50,15 +52,9 @@ const propsObject = {
             } 
           }, 
           { 
-            title: "Produto`",
+            title: "Produto",
             style: {
               width: 30
-            } 
-          }, 
-          { 
-            title: "Descrição",
-            style: {
-              width: 80
             } 
           }, 
           { title: "Preço unitário"},
@@ -78,7 +74,7 @@ const propsObject = {
             col2: '145,250.50',
             col3: 'R$',
             style: {
-                fontSize: 14 //optional, default 12
+                fontSize: 14
             }
         },
         {
@@ -86,7 +82,7 @@ const propsObject = {
             col2: '20',
             col3: 'R$',
             style: {
-                fontSize: 10 //optional, default 12
+                fontSize: 10
             }
         },
         {
@@ -94,7 +90,7 @@ const propsObject = {
             col2: '116,199.90',
             col3: 'R$',
             style: {
-                fontSize: 10 //optional, default 12
+                fontSize: 10
             }
         }],
         invDescLabel: "Nota de compra",
@@ -107,16 +103,83 @@ const propsObject = {
     pageLabel: "Página",
 };
 
-const generate = (customProps = {}) => {
-    const pdfCreated = jsPDFInvoiceTemplate({
-        ...propsObject,
-        contact: {
-            label: "Nota emitida para:",
-            name: customProps.customer_name,
-        },        
-    });
+const calcTotalProduts = (_products = [], discount=0) => {
+    const d = discount || 0;
+    const result = _products.reduce((acc, curr) => acc + curr.sell_price * curr.order_product.quantity, 0);
+    return result - d;
+}
 
-    return pdfCreated;
+const generate = (order = null) => {
+    if(order){
+        const updatedDate = format(parseISO(order.updatedAt), "dd/MM/yyyy hh:mm:ss");
+        const total = formatCash(calcTotalProduts(order.products, order.discount_amount));
+        const discount = formatCash(order.discount_amount || 0);
+        const subTotal = formatCash(calcTotalProduts(order.products));
+
+        /* const table = Array.from(Array(10), (item, index)=>([
+            index + 1,
+            "AEEE There are many variations ",
+            "Lorem Ipsum is simply dummy text dummy text ",
+            200.5,
+            4.5,
+            400.5
+        ])); */
+
+        const table = order.products.map((_order) => {
+            return (
+                [
+                    _order.id,
+                    _order.name,
+                    formatCash(_order.sell_price),
+                    _order.order_product.quantity,
+                    formatCash(_order.sell_price * _order.order_product.quantity),
+                ]);
+        });
+
+        const pdfCreated = jsPDFInvoiceTemplate({
+            ...propsObject,
+            invoice: {
+                ...propsObject.invoice,
+                label: `Nota #:`,
+                invDate: `Data de Pagamento: ${updatedDate}`,
+                invGenDate: `Data Emissão da Nota: ${updatedDate}`,
+                num: order.id,
+                table,
+                additionalRows: [{
+                    col1: 'Total:',
+                    col2: total,
+                    col3: 'R$',
+                    style: {
+                        fontSize: 14
+                    }
+                },
+                {
+                    col1: 'DESCONTO:',
+                    col2: discount,
+                    col3: 'R$',
+                    style: {
+                        fontSize: 10
+                    }
+                },
+                {
+                    col1: 'SubTotal:',
+                    col2: subTotal,
+                    col3: 'R$',
+                    style: {
+                        fontSize: 10
+                    }
+                }],
+                
+            },
+            contact: {
+                label: "Nota emitida para:",
+                name: order.customer_name,
+            },
+
+        });
+        return pdfCreated;
+    }
+    return ''    
 }
 
 export default generate;

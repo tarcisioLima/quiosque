@@ -13,6 +13,7 @@ const columns = (update, remove) => [
   {
     title: 'Nome',
     dataIndex: 'name',
+    width: 250,
     key: 'name',
     render: (text, record) => <a onClick={() => update(record)}>{text}</a>,
   },

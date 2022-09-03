@@ -45,6 +45,7 @@ class OrderController {
       customer_name: Yup.string().required(),
       discount_amount: Yup.number().notRequired(),
       type: Yup.mixed().oneOf(['table', 'single', 'sand', 'other']).required(),
+      status: Yup.mixed().oneOf(['open', 'paid']).notRequired(),
       tables_id: Yup.array().of(Yup.number()).notRequired(),
       products_id: Yup.array().of(
         Yup.object().shape({
@@ -62,9 +63,10 @@ class OrderController {
       return res.status(400).json(validationResult.errors);
     }
 
-    const { tables_id, products_id, ...rest } = req.body;
+    const { tables_id, products_id, status, ...rest } = req.body;
+  
 
-    const created = await Order.create({ ...rest, status: 'open' });
+    const created = await Order.create({ ...rest, status: status || 'open' });
 
      // Alocação das mesas
     if(tables_id && rest.type === 'table'){

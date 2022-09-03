@@ -79,6 +79,7 @@ const SaleDrawer = () => {
       const payload = noEmptyFields({
         tables_id,
         products_id,
+        status: rest.type === 'single' ? 'paid' : null,
         ...rest
       })
 
