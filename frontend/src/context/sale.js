@@ -77,6 +77,12 @@ import React, {
       setOpen(true);
       setCurrent(_current);
     };
+
+    const openUpdateTable = (_current) => {
+      setActionType('update');
+      setOpen(true);
+      setCurrent(_current);
+    };
   
     const closeDrawer = () => {
       setOpen(false);
@@ -129,6 +135,7 @@ import React, {
           openPayOrderModal, 
           setOpenPayOrderModal,
           triggerOpenPayModal,
+          openUpdateTable
         }}
       >
         {children}

@@ -7,7 +7,8 @@ import OrderProduct from '../models/OrderProduct';
 import closeOrder from '../utils/closeOrder';
 import transactionOrder from '../utils/transactionOrder';
 import isNumber from '../utils/isNumber';
-import getJoinedTables from '../utils/getJoinedTables';
+// import getJoinedTables from '../utils/getJoinedTables';
+import { removeFromTable } from '../utils/transactionOrder';
 
 class OrderController {
   async index(_, res) {
@@ -222,6 +223,32 @@ class OrderController {
     return res
       .status(200)
       .json({ status: 'Produto removido com sucesso!' });
+  }
+  async pending(req, res) {
+    const order = await Order.findByPk(req.params.id, {
+      include: {
+        model: Table,
+        as: "tables",
+      }
+    });
+
+    if (!order) {
+      return res.status(400).json({ status: 'Comanda não encontrada' });
+    }
+
+    // Free tables
+    if(order.tables){
+      await Table.update({status: 'free'}, { where: { id:  order.tables[0].id}});
+      await removeFromTable(order);
+    }
+
+    await Order.update({ status: 'pending'}, { where: {
+      id: req.params.id
+    }});
+
+    return res
+      .status(200)
+      .json({ status: `Comanda ${order.customer_name} está pendente!` });
   }
 }
 

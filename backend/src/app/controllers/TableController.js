@@ -1,6 +1,7 @@
 import Yup from '../../config/yup';
 import Table from '../models/Table';
 import Order from '../models/Order';
+import Product from '../models/Product';
 
 class TableController {
   async index(_, res) {
@@ -11,6 +12,12 @@ class TableController {
         {
           model: Order,
           as: "orders",
+          include: [
+            {
+              model: Product,
+              as: 'products'
+            }
+          ]
         },
       ]
     });
@@ -20,8 +27,8 @@ class TableController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().notRequired(),
-      status: Yup.mixed().oneOf(['free', 'opened', 'blocked']).required(),
-      type: Yup.mixed().oneOf(['normal', 'sand', 'other']).notRequired(),
+      status: Yup.mixed().oneOf(['free', 'opened', 'blocked']).notRequired(),
+      type: Yup.mixed().oneOf(['normal', 'sand', 'other']).required(),
     });
 
     if (!schema.isValidSync(req.body)) {
@@ -34,7 +41,7 @@ class TableController {
     }
 
 
-    await Table.create({...req.body});
+    await Table.create({...req.body, status: req.body.status || 'free'});
 
     return res
       .status(200)

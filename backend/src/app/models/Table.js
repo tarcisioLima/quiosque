@@ -22,8 +22,6 @@ class Table extends Model {
           }
         },
         disabled: DataTypes.BOOLEAN,
-        discount_amount: DataTypes.FLOAT,
-        payment_type: DataTypes.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
         createdAt: {
           field: 'created_at',
           type: DataTypes.DATE,

@@ -1,18 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Divider, PageHeader, Button, Typography, Col, Row, Tag } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
+import React, { useCallback } from 'react';
+import { Card, Divider, PageHeader, Button, Typography, Col, Row, Tag, message } from 'antd';
+import { SettingOutlined, DeleteOutlined, FileDoneOutlined  } from '@ant-design/icons';
 import { PlusCircleOutlined } from '@ant-design/icons';
+import Swal from 'sweetalert2';
 import Drawer from './drawer';
 import SaleProvider, { useSale } from '~/context/sale';
+import api from '~/services/api';
+import formatCash from '~/utils/formatCash';
+import PayTableModal from './payTableModal';
 
-const { Title } = Typography;
+
+const { Text } = Typography;
 
 const Tables = () => {
   const {
     tables,
     openNewOrder,
+    openUpdateTable,
+    fetchTables,
+    triggerOpenPayModal,
   } = useSale();
 
+
+  const removeTable = useCallback(async (table) => {
+    if(table.status !== 'free') {
+      message.error('A mesa precisa estar livre para ser excluida!');
+      return;
+    }
+    Swal.fire({
+      title: `Mesa ${table.name}`,
+      text: 'Deseja realmente excluir esta mesa?',
+      confirmButtonText: 'Excluir mesa',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+            await api.delete(`/table/${table.id}`);
+            message.success('Mesa excluida com sucesso!! :D');
+            fetchTables();
+          
+        } catch (err) {
+          console.log('ERR: ', err);
+        }
+      }
+    });
+  }, [api, fetchTables]);
+
+
+  const calcTotalOrders = (_orders = []) => {
+    const result = _orders.reduce((acc, _order) => {
+      const totalProducts = _order.products.reduce((acc, curr) => acc + curr.sell_price * curr.order_product.quantity, 0);
+      return acc + (totalProducts - _order.discount_amount || 0)
+    }, 0);
+    return formatCash(result);
+  }
 
   return (
     <div>
@@ -29,6 +73,7 @@ const Tables = () => {
       ></PageHeader>
 
       <Drawer/>
+      <PayTableModal/>
 
       {/* <Divider orientation="left"><Title level={3}>Listagem</Title></Divider> */}
       
@@ -43,15 +88,23 @@ const Tables = () => {
       <div className='card-deck'>
         <Row gutter={16}>
           {tables.map((_table) =>
-            <Col span={6}>
+            <Col span={6} style={{
+              marginBottom: 15,
+              
+              }}>
               <Card
-                title={_table.name}
+                title={`${_table.name} - ${_table.type_label}`}
                 style={{
                   width: '100%',
-                  marginBottom: 15
+                  marginBottom: 0,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
                 actions={[
-                  <SettingOutlined key="setting" />
+                  <SettingOutlined key="setting" title="Editar" onClick={() => openUpdateTable(_table)}/>,
+                  <DeleteOutlined key="delete" title='Excluir' onClick={() => removeTable(_table)}/>,
+                  <FileDoneOutlined  key="detail" title="Pagar" onClick={() => triggerOpenPayModal(_table)}/>
                 ]}
               >
                 <div>
@@ -63,15 +116,16 @@ const Tables = () => {
                     </Tag>
 
                     <Divider orientation='left'></Divider>
-                    
+                    { _table.status === 'opened' ? <div>
+                      <Text code>Total de comandas: {_table.orders.length}</Text><br/>
+                      <Text code type="success">Lucro total da mesa: {calcTotalOrders(_table.orders)}</Text>
+                    </div> : null }
                 </div>
               </Card>
             </Col>
           )}
         </Row>
       </div>
-     
-
     </div>
   );
 };

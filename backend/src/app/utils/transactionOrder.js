@@ -1,7 +1,7 @@
 import TableOrder from '../models/TableOrder';
 import Table from '../models/Table';
 
-const removeFromTable = async (order) => {    
+export const removeFromTable = async (order) => {    
     // Verifica se essa comanda já esta em outra mesa, se tiver, a remove.
     const foundTables = await TableOrder.findAll({ 
         where: { order_id: order.id },

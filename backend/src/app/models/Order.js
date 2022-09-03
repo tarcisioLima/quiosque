@@ -15,11 +15,11 @@ class Order extends Model {
           }
         },
         payment_type: DataTypes.ENUM('cash', 'credit', 'debit', 'pix', 'transfer', 'check', 'other'),
-        status: DataTypes.ENUM('open', 'paid'),
+        status: DataTypes.ENUM('open', 'paid', 'pending'),
         status_label: {
           type: DataTypes.VIRTUAL,
           get: function() {
-            const dict = {open: 'aberta', paid: 'pago'};
+            const dict = {open: 'aberta', paid: 'pago', pending: 'pendente'};
             return dict[this.get('status')]
           }
         },

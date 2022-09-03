@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Space, Table, Typography, Select, Divider } from 'antd';
+import Swal from 'sweetalert2';
+import { Space, Table, Typography, Select, Divider, message } from 'antd';
 import { useSale } from '~/context/sale';
 import formatCash from '~/utils/formatCash';
 import { format } from 'date-fns';
-
+import api from '~/services/api';
 const { Option } = Select;
 const { Title } = Typography;
 
-const columns = ({ viewNote, payOrder, openUpdateOrder }) => [
+const columns = ({ viewNote, payOrder, openUpdateOrder, setPending }) => [
    {
     title: 'Código',
     dataIndex: 'id',
@@ -75,11 +76,12 @@ const columns = ({ viewNote, payOrder, openUpdateOrder }) => [
     dataIndex: 'actions',
     key: 'actions',
     fixed: 'right',
-    width: 150,
+    width: 200,
     render: (_, record) => (
-      <Space size="middle">
+      <Space size="middle">        
         { record.status !== 'paid' ? <a onClick={() => openUpdateOrder(record)}>Editar</a> : null }
         { record.status !== 'paid' ? <a onClick={() => payOrder(record)}>Finalizar</a> : null }
+        { record.status !== 'paid' && record.status !== 'pending' ? <a onClick={() => setPending(record)}>Pendurar</a> : null }
         { record.status === 'paid' ? <a onClick={() => viewNote(record)}>Visualizar Nota</a> : null }       
       </Space>
     ),
@@ -87,7 +89,7 @@ const columns = ({ viewNote, payOrder, openUpdateOrder }) => [
 ];
 
 const OrdersTable = () => {
-    const { orders, openPFFOrder, triggerOpenPayModal, openUpdateOrder } = useSale();
+    const { orders, openPFFOrder, triggerOpenPayModal, openUpdateOrder, fetchOrders } = useSale();
     const [currentStatus, setCurrentStatus] = useState('all');
 
     const filteredOrders = useMemo(() => {
@@ -106,6 +108,29 @@ const OrdersTable = () => {
       triggerOpenPayModal(order);
     }
 
+    const setPending = (order) => {
+      Swal.fire({
+        title: `${order.customer_name}`,
+        text: 'Deseja realmente deixar esta comanda pendente?',
+        confirmButtonText: 'Sim',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+              await api.post(`/order/pending/${order.id}`);
+              message.success('Comanda esta pendente!! :D');
+              fetchOrders();
+            
+          } catch (err) {
+            console.log('ERR: ', err);
+          }
+        }
+      });
+    }
+
     return (
         <>
             <Select placeholder="Status" style={{ width: 120 }} onChange={(v) => setCurrentStatus(v)}>
@@ -120,7 +145,7 @@ const OrdersTable = () => {
 
             <Table 
               scroll={{ x: 1600 }} 
-              columns={columns({viewNote, payOrder, openUpdateOrder })} 
+              columns={columns({viewNote, payOrder, openUpdateOrder, setPending })} 
               dataSource={filteredOrders} />
         </>
     )

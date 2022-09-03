@@ -109,4 +109,10 @@ export default createGlobalStyle`
   .print-btn-order {
     text-align: right;
   }
+
+  .card-deck {
+    .ant-card-actions {
+      margin-top: auto;
+    }
+  }
 `;
