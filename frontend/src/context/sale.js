@@ -97,6 +97,11 @@ import React, {
         fetchProducts();
       }
     };
+
+    const onlyNotPayedOrders = (orders=[]) => {
+      return orders.filter((_order) => _order.status !== 'paid')
+    }
+  
   
     useEffect(() => {
       fetchOrders();
@@ -135,7 +140,8 @@ import React, {
           openPayOrderModal, 
           setOpenPayOrderModal,
           triggerOpenPayModal,
-          openUpdateTable
+          openUpdateTable,
+          onlyNotPayedOrders,
         }}
       >
         {children}

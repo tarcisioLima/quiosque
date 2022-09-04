@@ -2,6 +2,7 @@ import Yup from '../../config/yup';
 import Table from '../models/Table';
 import Order from '../models/Order';
 import Product from '../models/Product';
+import { Op } from 'sequelize';
 
 class TableController {
   async index(_, res) {

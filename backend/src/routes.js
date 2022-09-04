@@ -27,6 +27,7 @@ routes.get('/order', OrderController.index);
 routes.post('/order', OrderController.store);
 routes.put('/order/:id', OrderController.update);
 routes.post('/order/pending/:id', OrderController.pending);
+routes.post('/order/close-table/:table_id', OrderController.closeTable);
 routes.post('/order/:id/add-product/:product_id', OrderController.addProduct);
 routes.post('/order/:id/remove-product/:order_product_id', OrderController.removeProduct);
 

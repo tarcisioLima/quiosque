@@ -136,6 +136,7 @@ const OrdersTable = () => {
             <Select placeholder="Status" style={{ width: 120 }} onChange={(v) => setCurrentStatus(v)}>
               <Option value="all">Todos</Option>
               <Option value="open">Aberta</Option>
+              <Option value="pending">Pendente</Option>
               <Option value="paid">
                 Pago
               </Option>

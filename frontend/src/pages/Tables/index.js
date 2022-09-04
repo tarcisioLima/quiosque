@@ -19,6 +19,7 @@ const Tables = () => {
     openUpdateTable,
     fetchTables,
     triggerOpenPayModal,
+    onlyNotPayedOrders,
   } = useSale();
 
 
@@ -104,7 +105,11 @@ const Tables = () => {
                 actions={[
                   <SettingOutlined key="setting" title="Editar" onClick={() => openUpdateTable(_table)}/>,
                   <DeleteOutlined key="delete" title='Excluir' onClick={() => removeTable(_table)}/>,
-                  <FileDoneOutlined  key="detail" title="Pagar" onClick={() => triggerOpenPayModal(_table)}/>
+                  <FileDoneOutlined 
+                    key="detail" 
+                    title="Pagar" 
+                    onClick={() => triggerOpenPayModal(_table)} 
+                  />
                 ]}
               >
                 <div>
@@ -117,8 +122,8 @@ const Tables = () => {
 
                     <Divider orientation='left'></Divider>
                     { _table.status === 'opened' ? <div>
-                      <Text code>Total de comandas: {_table.orders.length}</Text><br/>
-                      <Text code type="success">Lucro total da mesa: {calcTotalOrders(_table.orders)}</Text>
+                      <Text code>Total de comandas: {onlyNotPayedOrders(_table.orders).length}</Text><br/>
+                      <Text code type="success">Lucro total da mesa: {calcTotalOrders(onlyNotPayedOrders(_table.orders))}</Text>
                     </div> : null }
                 </div>
               </Card>

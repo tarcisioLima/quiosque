@@ -111,7 +111,7 @@ const calcTotalProduts = (_products = [], discount=0) => {
 
 const generate = (order = null) => {
     if(order){
-        const updatedDate = format(parseISO(order.updatedAt), "dd/MM/yyyy hh:mm:ss");
+        const updatedDate = format(parseISO(order.updatedAt), "dd/MM/yyyy HH:mm:ss");
         const total = formatCash(calcTotalProduts(order.products, order.discount_amount));
         const discount = formatCash(order.discount_amount || 0);
         const subTotal = formatCash(calcTotalProduts(order.products));

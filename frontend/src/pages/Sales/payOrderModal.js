@@ -104,9 +104,9 @@ const {
                 <Title level={4}>PRODUTOS</Title>
                 <Table columns={columnsProduct} dataSource={current.products} pagination={false}/>
                 <br/>
-                <Title level={5} style={{margin:0}}>DESCONTO: <span className="orderAmount">{formatCash(0)}</span></Title>
+                <Title level={5} style={{margin:0}}>DESCONTO: <span className="orderAmount">{formatCash(current.discount_amount || 0)}</span></Title>
                 <Title level={5} style={{margin:0}}>SUB TOTAL: <span className="orderAmount">{formatCash(calcTotalProduts(current.products))}</span></Title>
-                <Title level={4} style={{margin:0}}>TOTAL: <span className="orderAmount">{formatCash(calcTotalProduts(current.products, current.discount_amount))}</span></Title>
+                <Title level={4} style={{margin:0}}>TOTAL: <span className="orderAmount">{formatCash(calcTotalProduts(current.products, current.discount_amount || 0))}</span></Title>
             </>) : null
         }
        
