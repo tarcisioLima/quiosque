@@ -11,7 +11,7 @@ const { TabPane } = Tabs;
 
 const PayTableModal = () => {
 const {    
-    openPayOrderModal, 
+    openPayOrderModal,
     setCurrent,
     setOpenPayOrderModal,
     fetchOrders,

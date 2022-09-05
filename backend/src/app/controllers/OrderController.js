@@ -186,14 +186,32 @@ class OrderController {
 
     if (!product) {
       return res.status(400).json({ status: 'Produto não encontrado' });
-    }    
+    }
+    
+    const hasAlreadyProduct = await OrderProduct.findOne({
+      where: {
+        order_id: order.id,
+        product_id: product.id,
+      }
+    });
 
-    await OrderProduct.create({
-      order_id: order.id,
-      product_id: product.id,
-      quantity: req.body.quantity || 1
-    })
-
+    if(hasAlreadyProduct){
+      const newQuantity = hasAlreadyProduct.quantity + req.body.quantity || 1;
+      await OrderProduct.update({
+        quantity: newQuantity,
+      }, {
+        where: {
+          order_id: order.id,
+          product_id: product.id,
+        }
+      })
+    } else {
+      await OrderProduct.create({
+        order_id: order.id,
+        product_id: product.id,
+        quantity: req.body.quantity || 1
+      });
+    }
 
     return res
       .status(200)
@@ -316,9 +334,27 @@ class OrderController {
     allNames = allNames.join('-')
     totalDiscount += req.body.discount_amount || 0;
 
+    // Join Products quantity
+    let allProductsJoined = [];
+    allProducts.forEach((_product) => {
+      const hasProduct = allProductsJoined.filter((__p) => __p.product_id === _product.product_id);
+
+      if(!hasProduct.length){
+        allProductsJoined.push(_product);
+      }else {
+        allProductsJoined = allProductsJoined.map((__p) => {
+          if(__p.product_id === _product.product_id){
+            const newQuantity = _product.quantity + hasProduct[0].quantity || 1;
+            return { ...__p, quantity: newQuantity};
+          }
+          return __p;
+        });
+      }
+    });
+
     console.log('DISCOUNT: ', totalDiscount);
     console.log('ALL NAMES: ', allNames);
-    console.log('ALL PRODUCTS: ', allProducts); 
+    console.log('ALL JOINED PRODUCTS: ', allProductsJoined); 
     console.log('TOTAL: ', totalProductsAmount);
 
     const newOrderForTableClosing = await Order.create({
@@ -330,7 +366,7 @@ class OrderController {
     });
 
     // Adding products to this just created order
-    allProducts.forEach(async (_product) => {
+    allProductsJoined.forEach(async (_product) => {
       await OrderProduct.create({
         order_id: newOrderForTableClosing.id,
         product_id: _product.product_id,

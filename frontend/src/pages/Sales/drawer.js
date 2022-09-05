@@ -22,6 +22,7 @@ import { formatNumber, parserNumber } from '~/utils/currencyMask';
 import formatCash from '~/utils/formatCash';
 import noEmptyFields from '~/utils/noEmptyFields';
 import objectOnlyWantedKeys from '~/utils/objectOnlyWantedKeys';
+import joinSameProducts from '~/utils/joinSameProducts';
 import api from '~/services/api';
 
 import { columnsOrderProduct, getByIdInList } from './reusables';
@@ -143,7 +144,8 @@ const SaleDrawer = () => {
 
     const __product = products.filter((_p) => _p.id === productOrder)[0]
     const newProduct = {...__product, quantity}
-    const newList = [newProduct, ...orderProducts];
+    const newList = joinSameProducts([newProduct, ...orderProducts]);
+    console.log('NEW LIST: ', newList)
 
     if(actionType === 'update'){
       await api.post(`/order/${current.id}/add-product/${__product.id}`, { quantity })

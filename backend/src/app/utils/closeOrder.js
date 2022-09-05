@@ -23,10 +23,13 @@ const closeOrder = async (order) => {
     const orderedTable = await TableOrder.findOne(
       {
         where: { order_id: order.id }, 
-        attributes: ['gathered_tables']
+        attributes: ['gathered_tables', 'table_id']
       })
 
-    // LIBERAR MESAS
+    // LIBERAR MESA PRINCIPAL
+    await Table.update({status: 'free'}, { where: { id:  orderedTable.getDataValue('table_id')}});
+    
+    // LIBERAR OUTRAS MESAS
     const united_tables = orderedTable.getDataValue('gathered_tables');
 
     if(united_tables){
