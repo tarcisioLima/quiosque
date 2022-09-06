@@ -11,8 +11,6 @@ const joinSameProducts = (list_products=[]) => {
         allProductsJoined = allProductsJoined.map((__p) => {
           if(__p.id === _product.id){
             const newQuantity = _product.quantity + hasProduct[0].quantity || 1;
-            console.log('_product.quantity:', _product);
-            console.log(' hasProduct[0].quantity || 1: ',  hasProduct[0].quantity || 1)
             return { ...__p, quantity: newQuantity};
           }
           return __p;

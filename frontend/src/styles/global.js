@@ -115,4 +115,12 @@ export default createGlobalStyle`
       margin-top: auto;
     }
   }
+
+  .impress-options-box {
+    height: 100%;
+    .ant-tabs, .ant-tabs-content {
+      height: 100%!important;
+    }
+  }
 `;
+
