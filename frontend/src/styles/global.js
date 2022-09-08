@@ -10,6 +10,7 @@ import robotoLight from '../assets/fonts/roboto/roboto-light-webfont.woff2';
 import robotoLightItalic from '../assets/fonts/roboto/roboto-lightitalic-webfont.woff2';
 import robotoMedium from '../assets/fonts/roboto/roboto-medium-webfont.woff2';
 import robotoRegular from '../assets/fonts/roboto/roboto-regular-webfont.woff2';
+import  TicketStyle from '~/components/Ticket/styles';
 
 export default createGlobalStyle`
   @font-face {
@@ -122,5 +123,7 @@ export default createGlobalStyle`
       height: 100%!important;
     }
   }
+
+  ${TicketStyle}
 `;
 
