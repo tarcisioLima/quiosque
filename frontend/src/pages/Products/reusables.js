@@ -56,10 +56,10 @@ const columns = (update, remove) => [
           <EditOutlined />
           Atualizar
         </Button>
-        <Button type="danger" onClick={() => remove(record.id)}>
+        {/* <Button type="danger" onClick={() => remove(record.id)}>
           <DeleteOutlined />
           Excluir
-        </Button>
+        </Button> */}
       </Space>
     ),
   },

@@ -368,7 +368,7 @@ const SaleDrawer = () => {
                         return join.toLowerCase().indexOf(input) > -1                      
                       }}
                     >
-                      {products.map((_p) => 
+                      {products.filter((_p) => !_p.disabled).map((_p) => 
                               <Option value={_p.id} key={_p.id}>
                                 Código: #{_p.id} | {_p.name} - VALOR: {formatCash(_p.sell_price)}
                               </Option>)}
