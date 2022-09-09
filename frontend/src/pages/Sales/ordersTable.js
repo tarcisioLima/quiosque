@@ -145,9 +145,13 @@ const OrdersTable = () => {
             <Divider> <Title level={3}>Comandas</Title></Divider>
 
             <Table 
-              scroll={{ x: 1600 }} 
+              scroll={{ x: 1600 }}
+              rows
               columns={columns({viewNote, payOrder, openUpdateOrder, setPending })} 
-              dataSource={filteredOrders} />
+              dataSource={filteredOrders} 
+              pagination={{ defaultPageSize: 100, showSizeChanger: true, pageSizeOptions: [100, 200, 300]}}
+              />
+              
         </>
     )
 }
