@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { store } from '~/store';
 import { signOut } from '~/store/modules/auth/actions';
+import { message } from 'antd';
 
 const UNAUTHORIZED = 401;
 
@@ -13,7 +14,10 @@ api.interceptors.response.use(
     return Promise.resolve(response);
   },
   (error) => {
-    if (error.response.status === UNAUTHORIZED) {
+    if(error.toJSON().message === 'Network Error'){
+      message.error('O servidor está desligado, por favor, ative-o antes de acessar!')
+    }
+    if (error.response && error.response.status === UNAUTHORIZED) {
       store.dispatch(signOut());
     }
     return Promise.reject(error);
