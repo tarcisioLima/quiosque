@@ -5,7 +5,12 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "dev:debug": "nodemon --inspect src/server.js"
+    "dev:debug": "nodemon --inspect src/server.js",
+    "build": "sucrase ./src -d ./dist --transforms imports",
+    "forever:start": "forever start ./forever/production.json",
+    "forever:stop": "forever stop quiosque-app",
+    "forever:info": "forever list",
+    "forever:restart": "forever restartall"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -31,6 +36,6 @@
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "sequelize-cli": "^6.4.1",
-    "sucrase": "^3.12.1"
+    "sucrase": "^3.10.1"
   }
 }

@@ -118,3 +118,6 @@ Validações de agendamento
 Redis memurai for windows port 6379
 
 Parei em: configurando fila com redis.
+------------------------------------------------------
+FOREVER
+$ npm install forever -g
